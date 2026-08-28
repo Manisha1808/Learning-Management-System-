@@ -1,6 +1,6 @@
 ## Learning Management System
 
-## Output 
+## Output - Admin Area
 ### Admin Dashboard
 <img width="1343" height="594" alt="image" src="https://github.com/user-attachments/assets/8f690f20-3f3a-40f3-a13d-dc07ab3d5d62" />
 ### Registration Page
