@@ -1,0 +1,21 @@
+﻿.validation-message {
+    color: red;
+    font-size: 13px;
+    display: block;
+    margin-top: 4px;
+}
+
+span {
+    color: red;
+}
+
+.btn-back:hover {
+    background-color: #e5e5e5;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}

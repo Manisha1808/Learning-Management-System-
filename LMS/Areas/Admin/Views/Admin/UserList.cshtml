@@ -1,15 +1,83 @@
 ﻿@{
     ViewBag.Title = "User List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<center>
-    <h3>User List</h3>
-</center>
-
+<center> <h3>User List</h3> </center>
 <br />
+@Html.ActionLink("Add User", "RegisterUser", "Admin",
+    new { area = "Admin" },
+    new { @class = "btn btn-primary" }
+)
 
 <table id="userGrid"></table>
 <div id="userPager"></div>
+<div id="userModal" class="modal" tabindex="-1" role="dialog">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h5 id="userModalTitle">Edit User</h5>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="txtUserId" />
+                <div>
+                    <label>First Name</label>
+                    <input id="txtFirstName" class="form-control" />
+                </div>
+                <br />
+
+                <div>
+                    <label>Last Name</label>
+                    <input id="txtLastName" class="form-control" />
+                </div>
+                <br />
+
+                <div>
+                    <label>Email</label>
+                    <input id="txtEmail" class="form-control" />
+                </div>
+                <br />
+
+                <div>
+                    <label>Role</label>
+                    <select id="txtRole" class="form-control">
+                        <option value="">-- Select Role --</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Employee</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnUpdateUser" class="btn btn-success">
+                    Update
+                </button>
+                <button type="button" id="btnCloseUserModal" class="btn btn-secondary">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id=" messageDialogue" title="LMS">
+    <p id="messageText"> </p>
+</div>
+
+<!-- Message Dialog -->
+<div id="messageDialog" title="LMS">
+    <p id="messageText"></p>
+</div>
+
+<!-- Confirmation Dialog -->
+<div id="confirmDialog" title="Confirm">
+    <p id="confirmText"></p>
+</div>
 
 @section scripts
 {

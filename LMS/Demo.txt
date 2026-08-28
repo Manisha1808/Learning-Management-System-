@@ -1,0 +1,134 @@
+﻿1.Add jQuery UI
+
+In your _Layout.cshtml or UserList.cshtml:
+
+< link rel = "stylesheet"
+      href = "https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+
+< script src = "https://code.jquery.com/ui/1.13.2/jquery-ui.js" ></ script >
+
+ Make sure jQuery loads before jQuery UI.
+
+2. Add a hidden dialog to UserList.cshtml
+
+Put this somewhere in the page:
+
+< div id = "messageDialog" title = "LMS" >
+   
+       < p id = "messageText" ></ p >
+    </ div >
+
+    Then initialize it:
+
+$("#messageDialog").dialog({
+autoOpen: false,
+    modal: true,
+    buttons:
+    {
+    OK: function() {
+            $(this).dialog("close");
+        }
+    }
+});
+
+Now create a small function:
+
+function showMessage(message)
+{
+
+    $("#messageText").text(message);
+
+    $("#messageDialog").dialog("open");
+}
+3.Replace your alert() calls
+
+Instead of:
+
+alert(response.message);
+
+use:
+
+showMessage(response.message);
+
+So your UPDATE becomes:
+
+success: function(response) {
+
+    if (response.success)
+    {
+
+        showMessage(response.message);
+
+        $("#userModal").modal("hide");
+
+        $("#userGrid")
+            .jqGrid("setGridParam", {
+        datatype: "json"
+            })
+            .trigger("reloadGrid");
+    }
+    else
+    {
+        showMessage("Update failed.");
+    }
+},
+error: function() {
+    showMessage("Error while updating user.");
+}
+
+And DELETE:
+
+success: function(response) {
+
+    if (response.success)
+    {
+
+        showMessage(response.message);
+
+        $("#userGrid")
+            .jqGrid("setGridParam", {
+        datatype: "json"
+            })
+            .trigger("reloadGrid");
+    }
+    else
+    {
+        showMessage("Delete failed.");
+    }
+},
+error: function(xhr) {
+
+    console.log(xhr.responseText);
+
+    showMessage("Error while deleting user.");
+}
+⚠️ Also fix this in your current code
+
+You currently have:
+
+$("#userGrid")
+    .setGridParam({
+datatype: "json"
+    })
+
+It should be:
+
+$("#userGrid")
+    .jqGrid("setGridParam", {
+datatype: "json"
+    })
+
+because setGridParam is a jqGrid method.
+
+And your confirmation
+
+You currently have:
+
+var result = confirm("Are you sure you want to delete this user?");
+
+If you want that to also be a proper jQuery UI dialog, we can replace confirm() too with:
+
+Are you sure you want to delete this user?
+[Delete] [Cancel]
+
+That would make the whole Edit/Update/Delete experience consistent.

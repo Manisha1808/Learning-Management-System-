@@ -1,12 +1,9 @@
-﻿<h2>Admin Dashboard</h2>
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
 
-<a href="@Url.Action("RegisterUser", "Admin")">
-    Register New User
-</a>
+<center> <h2>ADMIN DASHBOARD</h2>  </center>
 
-<br />
-<br />
 
-<a href="@Url.Action("UserList", "Admin")">
-    User List
-</a>
+

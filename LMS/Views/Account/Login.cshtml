@@ -35,31 +35,17 @@
         <div class="form-group">
             <label><span>*</span> Email</label>
 
-            @Html.TextBoxFor(
-                m => m.Email,
-                new { @class = "form-control", type = "email" }
-            )
+            @Html.TextBoxFor(m => m.Email,new { @class = "form-control", type = "email" })
 
-            @Html.ValidationMessageFor(
-                m => m.Email,
-                "",
-                new { @class = "validation-message" }
+            @Html.ValidationMessageFor(m => m.Email,"",new { @class = "validation-message" }
             )
         </div>
 
         <div class="form-group">
             <label><span>*</span> Password</label>
 
-            @Html.PasswordFor(
-                m => m.Password,
-                new { @class = "form-control" }
-            )
-
-            @Html.ValidationMessageFor(
-                m => m.Password,
-                "",
-                new { @class = "validation-message" }
-            )
+            @Html.PasswordFor(m => m.Password,new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Password,"",new { @class = "validation-message" })
         </div>
 
         <button type="submit" class="btn-login">
