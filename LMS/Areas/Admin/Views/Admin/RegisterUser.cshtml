@@ -46,19 +46,31 @@
 
     <div id="courseDiv" class="form-group" style="display:none;">
         <label><span>*</span> Course</label>
-        @Html.DropDownListFor(m => m.CourseId, new List<SelectListItem>
-            {
-                new SelectListItem { Text = "MVC", Value = "1" },
-                new SelectListItem { Text = "Azure", Value = "2" }
-            }, "-- Select Course --", new { @class = "form-control", id = "Course" })
-        @Html.ValidationMessageFor(m => m.CourseId, "", new { @class = "validation-message" })
+
+        @Html.DropDownListFor(
+            m => m.CourseId,
+            (IEnumerable<SelectListItem>)ViewBag.Courses,
+            "-- Select Course --",
+            new { @class = "form-control", id = "Course" }
+        )
+
+        @Html.ValidationMessageFor(
+            m => m.CourseId,
+            "",
+            new { @class = "validation-message" }
+        )
     </div>
 
     <div class="button-container">
+
         <button type="submit" class="btn-create">
             Create User
         </button>
-
+        <button type="button"
+                id="btnClearRegisterUser"
+                class="btn btn-default">
+            Clear
+        </button>
         <button type="button" class="btn-create"
                 onclick="window.location.href='@Url.Action("Dashboard", "Admin", new { area = "Admin" })'">
             Back
@@ -132,6 +144,19 @@
             });
 
         });
+        $("#btnClearRegisterUser").click(function () {
+
+            $("#FirstName").val("");
+            $("#LastName").val("");
+            $("#Email").val("");
+            $("#Password").val("");
+            $("#ConfirmPassword").val("");
+            $("#Role").val("");
+            $("#Course").val("");
+            $("#courseDiv").hide();
+
+        });
+
     </script>
 }
 @*<script src="~/Scripts/jquery-3.4.1.min.js"></script>

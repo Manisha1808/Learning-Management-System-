@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-
+using System.Web.Mvc;
 namespace LMS.DB
 {
     public class AdminDB
@@ -31,7 +31,29 @@ namespace LMS.DB
 
             return userId;
         }
+        public List<SelectListItem> GetCourses()
+        {
+            List<SelectListItem> courses = new List<SelectListItem>();
 
+            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand("sp_GetCourses", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        courses.Add(new SelectListItem
+                        {
+                            Text = reader["CourseName"].ToString(),
+                            Value = reader["CourseId"].ToString()
+                        });
+                    }
+                }
+            }
+            return courses;
+        }
         public void AssignUserCourse(int userId, int courseId)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -120,41 +142,90 @@ namespace LMS.DB
 
             return users;
         }
-        public List<UserList> SearchEmployees(EmployeeSearch model)
+        public List<SearchUser> SearchEmployees(
+      string Name,
+      string email,
+      int? roleId,
+      int? courseId,
+      string status,
+      DateTime? fromDate,
+      DateTime? toDate)
         {
-            List<UserList> users = new List<UserList>();
+            List<SearchUser> employees = new List<SearchUser>();
+
             using (SqlConnection con = new SqlConnection(connectionString))
             using (SqlCommand cmd = new SqlCommand("sp_SearchEmployees", con))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@EmployeeName", string.IsNullOrWhiteSpace(model.EmployeeName) ? (object)DBNull.Value : model.EmployeeName);
-                cmd.Parameters.AddWithValue("@Email", string.IsNullOrWhiteSpace(model.Email) ? (object)DBNull.Value : model.Email);
-                cmd.Parameters.AddWithValue("@CourseId", model.CourseId.HasValue ? (object)model.CourseId.Value : DBNull.Value);
-                cmd.Parameters.AddWithValue("@Status", string.IsNullOrWhiteSpace(model.Status) ? (object)DBNull.Value : model.Status);
-                cmd.Parameters.AddWithValue("@FromDate", model.FromDate.HasValue ? (object)model.FromDate.Value : DBNull.Value);
-                cmd.Parameters.AddWithValue("@ToDate", model.ToDate.HasValue ? (object)model.ToDate.Value : DBNull.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@EmployeeName",
+                    (object)Name ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@Email",
+                    (object)email ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@RoleId",
+                    (object)roleId ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@CourseId",
+                    (object)courseId ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@Status",
+                    (object)status ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@FromDate",
+                    (object)fromDate ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@ToDate",
+                    (object)toDate ?? DBNull.Value);
+
                 con.Open();
+
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        users.Add(new UserList
+                        employees.Add(new SearchUser
                         {
                             UserId = Convert.ToInt32(reader["UserId"]),
+
                             Name = reader["Name"].ToString(),
+
                             Email = reader["Email"].ToString(),
+
                             Role = reader["Role"].ToString(),
-                            Course = reader["Course"] == DBNull.Value ? "" : reader["Course"].ToString(),
-                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["EnrollmentDate"]).ToString("dd-MMM-yyyy"),
-                            Status = reader["Status"] == DBNull.Value ? "" : reader["Status"].ToString(),
-                            UserStatus = reader["UserStatus"] == DBNull.Value ? "" : reader["UserStatus"].ToString(),
-                            CreatedDate = reader["CreatedDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["CreatedDate"]).ToString("dd-MMM-yyyy"),
-                            CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString()
+
+                            Course = reader["Course"] == DBNull.Value
+                                ? ""
+                                : reader["Course"].ToString(),
+
+                            EnrollmentDate =
+                                reader["EnrollmentDate"] == DBNull.Value
+                                ? (DateTime?)null
+                                : Convert.ToDateTime(reader["EnrollmentDate"]),
+
+                            UserStatus = reader["UserStatus"].ToString(),
+
+                            CreatedDate =
+                                Convert.ToDateTime(reader["CreatedDate"]),
+
+                            CreatedBy =
+                                reader["CreatedBy"] == DBNull.Value
+                                ? ""
+                                : reader["CreatedBy"].ToString()
                         });
                     }
                 }
             }
-            return users;
+
+            return employees;
         }
         public object GetUserById(int id)
         {

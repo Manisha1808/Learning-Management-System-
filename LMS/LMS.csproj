@@ -140,7 +140,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
-    <Compile Include="Areas\Admin\Models\EmployeeSearch.cs" />
     <Compile Include="Areas\Admin\Models\ManageProfile.cs" />
     <Compile Include="Areas\Admin\Models\RegisterUser.cs" />
     <Compile Include="Areas\Admin\Models\SearchUser.cs" />
@@ -224,7 +223,7 @@
     <Content Include="Areas\Employee\Views\Employee\MyLearning.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\ManageProfile.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\Course.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\EmployeeSearch.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\SearchUser.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\WatchVideo.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\CourseContent.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\Quiz.cshtml" />

@@ -1,4 +1,4 @@
-﻿@model LMS.Areas.Admin.Models.EmployeeSearch
+﻿@model LMS.Areas.Admin.Models.SearchUser
 
 @{
     ViewBag.Title = "Employee Search";
@@ -6,24 +6,24 @@
 }
 
 <center>
-    <h3>Search Employees</h3>
+    <h3>Search User  </h3>
 </center>
 
 <br />
 
 <div class="form-horizontal">
 
-    <!-- Employee Name -->
+    <!-- Name -->
     <div class="form-group">
         <label class="control-label col-md-2">
-            Employee Name
+         Name
         </label>
 
         <div class="col-md-6">
             <input type="text"
                    id="txtEmployeeName"
                    class="form-control"
-                   placeholder="Enter employee name" />
+                   placeholder="Enter name" />
         </div>
     </div>
 
@@ -41,65 +41,79 @@
         </div>
     </div>
 
-    <!-- Course -->
+   <!-- Role -->
     <div class="form-group">
         <label class="control-label col-md-2">
-            Course
+            Role
         </label>
 
         <div class="col-md-6">
-            <select id="ddlCourse" class="form-control">
-                <option value="">Select a Course</option>
-                <option value="1">MVC</option>
-                <option value="2">Azure</option>
+            <select id="ddlRole" class="form-control">
+                <option value="">-- Select Role --</option>
+                <option value="1">Admin</option>
+                <option value="2">Employee</option>
             </select>
         </div>
     </div>
 
-    <!-- Status -->
-    <div class="form-group">
-        <label class="control-label col-md-2">
-            Status
-        </label>
+    <div id="employeeFilters" style="display:none;">
 
-        <div class="col-md-6">
-            <select id="ddlStatus" class="form-control">
-                <option value="">All Status</option>
-                <option value="Not Started">Not Started</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-            </select>
+        <!-- Course -->
+        <div class="form-group">
+            <label class="control-label col-md-2">  Course    </label>
+            <div class="col-md-6">
+                @Html.DropDownListFor(
+                    m => m.CourseId,
+                    (IEnumerable<SelectListItem>)ViewBag.Courses,
+                    "-- Select Course --",
+                    new { @class = "form-control", id = "ddlCourse" }
+                )
+            </div>
         </div>
-    </div>
 
-    <!-- Enrollment From -->
-    <div class="form-group">
-        <label class="control-label col-md-2">
-            Enrollment From
-        </label>
+        <!-- Status -->
+        <div class="form-group">
+            <label class="control-label col-md-2">
+                Status
+            </label>
 
-        <div class="col-md-6">
-            <input type="date"
-                   id="txtFromDate"
-                   class="form-control" />
+            <div class="col-md-6">
+                <select id="ddlStatus" class="form-control">
+                    <option value="">All Status</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <!-- Enrollment To -->
-    <div class="form-group">
-        <label class="control-label col-md-2">
-            Enrollment To
-        </label>
+        <!-- Enrollment From -->
+        <div class="form-group">
+            <label class="control-label col-md-2">
+                Enrollment From
+            </label>
 
-        <div class="col-md-6">
-            <input type="date"
-                   id="txtToDate"
-                   class="form-control" />
+            <div class="col-md-6">
+                <input type="date"
+                       id="txtFromDate"
+                       class="form-control" />
+            </div>
         </div>
+
+        <!-- Enrollment To -->
+        <div class="form-group">
+            <label class="control-label col-md-2">
+                Enrollment To
+            </label>
+
+            <div class="col-md-6">
+                <input type="date"
+                       id="txtToDate"
+                       class="form-control" />
+            </div>
+        </div>
+
     </div>
-
-    <br />
-
     <div class="form-group">
         <div class="col-md-offset-2 col-md-6">
 
@@ -110,7 +124,7 @@
             </button>
 
             <button type="button"
-                    id="btnClearEmployeeSearch"
+                    id="btnClearSearchUser"
                     class="btn btn-default">
                 Clear
             </button>
@@ -284,7 +298,19 @@
 
                     {
                         name: "EnrollmentDate",
-                        width: 150
+                        width: 150,
+                        formatter: function (cellvalue) {
+
+                            if (!cellvalue) {
+                                return "";
+                            }
+
+                            var date = new Date(parseInt(cellvalue.substr(6)));
+
+                            return ("0" + date.getDate()).slice(-2) + "-" +
+                                ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+                                date.getFullYear();
+                        }
                     },
 
                     {
@@ -294,7 +320,19 @@
 
                     {
                         name: "CreatedDate",
-                        width: 100
+                        width: 100,
+                        formatter: function (cellvalue) {
+
+                            if (!cellvalue) {
+                                return "";
+                            }
+
+                            var date = new Date(parseInt(cellvalue.substr(6)));
+
+                            return ("0" + date.getDate()).slice(-2) + "-" +
+                                ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+                                date.getFullYear();
+                        }
                     },
 
                     {
@@ -352,7 +390,37 @@
 
             });
 
+            function toggleEmployeeFilters() {
 
+                if ($("#ddlRole").val() == "2") {
+                    $("#employeeFilters").show();
+                }
+                else {
+                   $("#employeeFilters").hide();
+                    $("#ddlCourse").val("");
+                    $("#ddlStatus").val("");
+                    $("#txtFromDate").val("");
+                    $("#txtToDate").val("");
+                }
+            }
+            function toggleGridColumns() {
+
+                if ($("#ddlRole").val() == "1") {
+
+                    $("#employeeSearchGrid")
+                        .jqGrid("hideCol", ["Course", "EnrollmentDate"]);
+                }
+                else {
+
+                    $("#employeeSearchGrid")
+                        .jqGrid("showCol", ["Course", "EnrollmentDate"]);
+                }
+            }
+            $("#ddlRole").change(function () {
+
+                toggleEmployeeFilters();
+                toggleGridColumns();
+            });
             // =========================
             // SEARCH
             // =========================
@@ -360,95 +428,49 @@
             $("#btnSearchEmployee").click(function () {
 
                 var searchModel = {
-
-                    EmployeeName:
-                        $("#txtEmployeeName").val(),
-
-                    Email:
-                        $("#txtEmail").val(),
-
-                    CourseId:
-                        $("#ddlCourse").val() || null,
-
-                    Status:
-                        $("#ddlStatus").val() || null,
-
-                    FromDate:
-                        $("#txtFromDate").val() || null,
-
-                    ToDate:
-                        $("#txtToDate").val() || null
+                    EmployeeName:$("#txtEmployeeName").val(),
+                    Email:$("#txtEmail").val(),
+                    RoleId:$("#ddlRole").val() || null,
+                    CourseId:$("#ddlCourse").val() || null,
+                    Status:$("#ddlStatus").val() || null,
+                    FromDate:$("#txtFromDate").val() || null,
+                    ToDate:$("#txtToDate").val() || null
                 };
-
-
                 $.ajax({
-
                     url: "/Admin/Admin/SearchEmployees",
-
                     type: "POST",
-
                     data: searchModel,
-
                     success: function (response) {
-
-                        console.log(
-                            "SEARCH RESPONSE:",
-                            response
-                        );
-
-                        $("#employeeSearchGrid")
-                            .jqGrid("clearGridData");
-
-                        $("#employeeSearchGrid")
-                            .jqGrid(
-                                "setGridParam",
-                                {
-                                    data: response
-                                }
-                            )
-                            .trigger("reloadGrid");
-
-                    },
-
+                        console.log("SEARCH RESPONSE:",response);
+                        $("#employeeSearchGrid").jqGrid("clearGridData");
+                        $("#employeeSearchGrid").jqGrid("setGridParam",{ data: response }).trigger("reloadGrid");},
                     error: function (xhr) {
-
                         console.log(
                             xhr.responseText
                         );
-
                         alert(
                             "Error while searching employees."
                         );
                     }
-
                 });
 
             });
-
 
             // =========================
             // CLEAR
             // =========================
 
-            $("#btnClearEmployeeSearch").click(function () {
-
+            $("#btnClearSearchUser").click(function () {
                 $("#txtEmployeeName").val("");
-
                 $("#txtEmail").val("");
-
+                $("#ddlRole").val("");
                 $("#ddlCourse").val("");
-
                 $("#ddlStatus").val("");
-
                 $("#txtFromDate").val("");
-
                 $("#txtToDate").val("");
-
-                $("#employeeSearchGrid")
-                    .jqGrid("clearGridData");
-
-            });
-            
+                toggleEmployeeFilters();
+                $("#employeeSearchGrid").jqGrid("clearGridData");
+            });      
 
             // =========================
             // EDIT

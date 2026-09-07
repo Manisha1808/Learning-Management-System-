@@ -26,27 +26,39 @@ namespace LMS.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult RegisterUser()
         {
+            AdminDB db = new AdminDB();
+            ViewBag.Courses = db.GetCourses();
             return View();
         }
-
         [HttpGet]
         public ActionResult UserList()
         {
             return View();
         }
-
         [HttpGet]
-        public ActionResult EmployeeSearch()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public JsonResult SearchEmployees(EmployeeSearch model)
+        public ActionResult SearchUser()
         {
             AdminDB db = new AdminDB();
-            List<UserList> users = db.SearchEmployees(model);
-            return Json(users);
+
+            ViewBag.Courses = db.GetCourses();
+
+            return View();
+        }
+        [HttpPost]
+        public JsonResult SearchEmployees(SearchUser model)
+        {
+            AdminDB db = new AdminDB();
+
+            var employees = db.SearchEmployees(
+                model.Name,
+                model.Email,
+                model.RoleId,
+                model.CourseId,
+                model.Status,
+                model.FromDate,
+                model.ToDate
+            );
+            return Json(employees);
         }
 
         [HttpPost]
