@@ -1,0 +1,69 @@
+﻿@model List<LMS.Areas.Employee.Models.EmployeeCourse>
+
+<div class="course-container">
+
+    @foreach (var course in Model)
+    {
+        bool isAvailable = course.EnrollmentDate <= DateTime.Now;
+
+    <div class="course-card">
+
+        <h3>@course.CourseName</h3>
+
+        <p>
+            Enrollment Date:
+            @course.EnrollmentDate.ToString("dd-MM-yyyy")
+        </p>
+
+        <p>
+            Status:
+            @if (course.Status == "Expired")
+            {
+                <span>Expired</span>
+            }
+            else if (isAvailable)
+            {
+                <span>Active</span>
+            }
+            else
+            {
+                <span>Locked</span>
+            }
+        </p>
+        @if (course.Status == "Expired")
+        {
+            <button class="btn btn-secondary" disabled>
+                Course Expired
+            </button>
+        }
+        else if (isAvailable)
+        {
+            if (course.StartDate == null)
+            {
+                <a href="@Url.Action("StartLearning", "Employee",
+            new { area = "Employee", id = course.CourseId })"
+                   class="btn btn-primary">
+                    Start Learning
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("ContinueLearning", "Employee",
+            new { area = "Employee", id = course.CourseId })"
+                   class="btn btn-primary">
+                    Continue Learning
+                </a>
+            }
+        }
+        else
+        {
+            <button class="btn btn-secondary" disabled>
+                🔒 Available from
+                @course.EnrollmentDate.ToString("dd-MM-yyyy")
+            </button>
+        }
+
+    </div>
+    }
+
+</div>

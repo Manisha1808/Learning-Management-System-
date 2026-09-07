@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>@ViewBag.Title - LMS</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    @Styles.Render("~/Content/css")
+
+
+    <style>
+
+        body {
+            margin: 0;
+            padding-top: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard-header {
+            position: relative;
+            min-height: 50px;
+        }
+
+            .dashboard-header h2 {
+                text-align: center;
+                margin: 0;
+            }
+
+        .manage-profile-btn {
+            position: absolute;
+            top: 0;
+            right: 10px;
+            width: 100px;
+            padding: 8px 0;
+            border: 1px solid #337ab7;
+            background: grey;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+        }
+        .employee-navbar {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            background-color: #5b9bd5;
+        }
+
+        .navbar-left,
+        .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .employee-navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+        }
+
+            .employee-navbar a:hover {
+                background-color: #337ab7;
+                text-decoration: none;
+                color: white;
+            }
+
+        .navbar-right a {
+            margin-left: 10px;
+        }
+
+        .employee-content {
+            padding: 10px 30px;
+            box-sizing: border-box;
+        }
+        .ui-dialog {
+            border: 1px solid #ccc !important;
+            background: white !important;
+            padding: 0 !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .ui-dialog-content {
+            background: white !important;
+            padding: 20px !important;
+        }
+
+        .ui-dialog-buttonpane {
+            background: white !important;
+            padding: 10px 15px !important;
+            border-top: 1px solid #eee !important;
+        }
+
+        .ui-dialog-titlebar {
+            display: none !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav class="employee-navbar">
+
+        <div class="navbar-left">
+            <a href="@Url.Action("Dashboard", "Employee", new { area = "Employee" })">
+                Home
+            </a>
+        </div>
+
+        <div class="navbar-right">
+
+            <a href="@Url.Action("MyLearning", "Employee", new { area = "Employee" })">
+                My Learning
+            </a>
+
+            <a href="@Url.Action("ManageProfile", "Employee", new { area = "Employee" })">
+                Manage Profile
+            </a>
+
+        </div>
+
+    </nav>
+
+    <div class="employee-content">
+        @RenderBody()
+        @if (TempData["DeadlineMessage"] != null)
+        {
+            <div class="modal fade" id="deadlineModal"
+                 tabindex="-1"
+                 role="dialog"
+                 aria-labelledby="deadlineModalLabel"
+                 aria-hidden="true">
+
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deadlineModalLabel">
+                                Deadline Crossed
+                            </h5>
+
+                            <button type="button"
+                                    class="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            @TempData["DeadlineMessage"]
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    data-dismiss="modal">
+                                OK
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <script>
+        $(document).ready(function () {
+            $('#deadlineModal').modal('show');
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

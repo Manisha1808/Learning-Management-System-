@@ -1,0 +1,676 @@
+﻿@model LMS.Areas.Admin.Models.EmployeeSearch
+
+@{
+    ViewBag.Title = "Employee Search";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<center>
+    <h3>Search Employees</h3>
+</center>
+
+<br />
+
+<div class="form-horizontal">
+
+    <!-- Employee Name -->
+    <div class="form-group">
+        <label class="control-label col-md-2">
+            Employee Name
+        </label>
+
+        <div class="col-md-6">
+            <input type="text"
+                   id="txtEmployeeName"
+                   class="form-control"
+                   placeholder="Enter employee name" />
+        </div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+        <label class="control-label col-md-2">
+            Email
+        </label>
+
+        <div class="col-md-6">
+            <input type="text"
+                   id="txtEmail"
+                   class="form-control"
+                   placeholder="Enter email" />
+        </div>
+    </div>
+
+    <!-- Course -->
+    <div class="form-group">
+        <label class="control-label col-md-2">
+            Course
+        </label>
+
+        <div class="col-md-6">
+            <select id="ddlCourse" class="form-control">
+                <option value="">Select a Course</option>
+                <option value="1">MVC</option>
+                <option value="2">Azure</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div class="form-group">
+        <label class="control-label col-md-2">
+            Status
+        </label>
+
+        <div class="col-md-6">
+            <select id="ddlStatus" class="form-control">
+                <option value="">All Status</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Enrollment From -->
+    <div class="form-group">
+        <label class="control-label col-md-2">
+            Enrollment From
+        </label>
+
+        <div class="col-md-6">
+            <input type="date"
+                   id="txtFromDate"
+                   class="form-control" />
+        </div>
+    </div>
+
+    <!-- Enrollment To -->
+    <div class="form-group">
+        <label class="control-label col-md-2">
+            Enrollment To
+        </label>
+
+        <div class="col-md-6">
+            <input type="date"
+                   id="txtToDate"
+                   class="form-control" />
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-6">
+
+            <button type="button"
+                    id="btnSearchEmployee"
+                    class="btn btn-primary">
+                Search
+            </button>
+
+            <button type="button"
+                    id="btnClearEmployeeSearch"
+                    class="btn btn-default">
+                Clear
+            </button>
+
+        </div>
+    </div>
+
+</div>
+
+<br />
+
+<hr />
+
+<h4>Search Results</h4>
+
+<table id="employeeSearchGrid"></table>
+<div id="employeeSearchPager"></div>
+
+
+<!-- EDIT USER MODAL -->
+<div id="userModal"
+     class="modal"
+     tabindex="-1"
+     role="dialog"
+     style="display:none;">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <button type="button"
+                        class="close"
+                        data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+
+                <h5 id="userModalTitle">
+                    Edit User
+                </h5>
+
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden"
+                       id="txtUserId" />
+
+                <div>
+                    <label>First Name</label>
+
+                    <input id="txtFirstName"
+                           class="form-control" />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Last Name</label>
+
+                    <input id="txtLastName"
+                           class="form-control" />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Email</label>
+
+                    <!-- DIFFERENT ID FROM SEARCH EMAIL -->
+                    <input id="txtEditEmail"
+                           class="form-control" />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Role</label>
+
+                    <select id="txtRole"
+                            class="form-control">
+
+                        <option value="">
+                            -- Select Role --
+                        </option>
+
+                        <option value="1">
+                            Admin
+                        </option>
+
+                        <option value="2">
+                            Employee
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        id="btnUpdateUser"
+                        class="btn btn-success">
+                    Update
+                </button>
+
+                <button type="button"
+                        id="btnCloseUserModal"
+                        class="btn btn-secondary">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            // =========================
+            // EMPLOYEE SEARCH GRID
+            // =========================
+
+            $("#employeeSearchGrid").jqGrid({
+
+                datatype: "local",
+
+                colNames: [
+                    "Name",
+                    "Email",
+                    "Role",
+                    "Course",
+                    "Enrollment Date",
+                    "UserStatus",
+                    "Created Date",
+                    "Created By",
+                    "Actions"
+                ],
+
+                colModel: [
+
+                    {
+                        name: "Name",
+                        width: 100
+                    },
+
+                    {
+                        name: "Email",
+                        width: 150
+                    },
+
+                    {
+                        name: "Role",
+                        width: 100
+                    },
+
+                    {
+                        name: "Course",
+                        width: 100
+                    },
+
+                    {
+                        name: "EnrollmentDate",
+                        width: 150
+                    },
+
+                    {
+                        name: "UserStatus",
+                        width: 100
+                    },
+
+                    {
+                        name: "CreatedDate",
+                        width: 100
+                    },
+
+                    {
+                        name: "CreatedBy",
+                        width: 100
+                    },
+
+                    {
+                        name: "Actions",
+                        width: 180,
+                        sortable: false,
+
+                        formatter: function (
+                            cellvalue,
+                            options,
+                            rowObject
+                        ) {
+
+                            var statusButton = "";
+
+                            if (rowObject.UserStatus === "Active") {
+
+                                statusButton =
+                                    '<button type="button" ' +
+                                    'class="btn btn-warning btn-sm btn-status" ' +
+                                    'data-id="' + rowObject.UserId + '" ' +
+                                    'data-status="false">' +
+                                    'Deactivate' +
+                                    '</button>';
+
+                            }
+                            else {
+
+                                statusButton =
+                                    '<button type="button" ' +
+                                    'class="btn btn-success btn-sm btn-status" ' +
+                                    'data-id="' + rowObject.UserId + '" ' +
+                                    'data-status="true">' +
+                                    'Activate' +
+                                    '</button>';
+                            }
+
+                            return (
+                                '<button type="button" ' +
+                                'class="btn btn-primary btn-sm btn-edit" ' +
+                                'data-id="' + rowObject.UserId + '">' +
+                                'Edit' +
+                                '</button> ' +
+                                statusButton
+                            );
+                        }
+                    }
+
+                ]
+
+            });
+
+
+            // =========================
+            // SEARCH
+            // =========================
+
+            $("#btnSearchEmployee").click(function () {
+
+                var searchModel = {
+
+                    EmployeeName:
+                        $("#txtEmployeeName").val(),
+
+                    Email:
+                        $("#txtEmail").val(),
+
+                    CourseId:
+                        $("#ddlCourse").val() || null,
+
+                    Status:
+                        $("#ddlStatus").val() || null,
+
+                    FromDate:
+                        $("#txtFromDate").val() || null,
+
+                    ToDate:
+                        $("#txtToDate").val() || null
+                };
+
+
+                $.ajax({
+
+                    url: "/Admin/Admin/SearchEmployees",
+
+                    type: "POST",
+
+                    data: searchModel,
+
+                    success: function (response) {
+
+                        console.log(
+                            "SEARCH RESPONSE:",
+                            response
+                        );
+
+                        $("#employeeSearchGrid")
+                            .jqGrid("clearGridData");
+
+                        $("#employeeSearchGrid")
+                            .jqGrid(
+                                "setGridParam",
+                                {
+                                    data: response
+                                }
+                            )
+                            .trigger("reloadGrid");
+
+                    },
+
+                    error: function (xhr) {
+
+                        console.log(
+                            xhr.responseText
+                        );
+
+                        alert(
+                            "Error while searching employees."
+                        );
+                    }
+
+                });
+
+            });
+
+
+            // =========================
+            // CLEAR
+            // =========================
+
+            $("#btnClearEmployeeSearch").click(function () {
+
+                $("#txtEmployeeName").val("");
+
+                $("#txtEmail").val("");
+
+                $("#ddlCourse").val("");
+
+                $("#ddlStatus").val("");
+
+                $("#txtFromDate").val("");
+
+                $("#txtToDate").val("");
+
+                $("#employeeSearchGrid")
+                    .jqGrid("clearGridData");
+
+            });
+            
+
+            // =========================
+            // EDIT
+            // =========================
+
+            $(document).on(
+                "click",
+                "#employeeSearchGrid .btn-edit",
+                function () {
+
+                    var userId =
+                        $(this).data("id");
+
+                    $.ajax({
+
+                        url:
+                            "/Admin/Admin/GetUserById",
+
+                        type: "GET",
+
+                        data: {
+                            id: userId
+                        },
+
+                        success: function (response) {
+
+                            if (response != null) {
+
+                                $("#txtUserId")
+                                    .val(response.UserId);
+
+                                $("#txtFirstName")
+                                    .val(response.FirstName);
+
+                                $("#txtLastName")
+                                    .val(response.LastName);
+
+                                $("#txtEditEmail")
+                                    .val(response.Email);
+
+                                $("#txtRole")
+                                    .val(response.RoleId);
+
+                                $("#userModal")
+                                    .modal("show");
+                            }
+
+                        },
+
+                        error: function (xhr) {
+
+                            console.log(
+                                "GetUserById ERROR:",
+                                xhr.responseText
+                            );
+
+                            alert(
+                                "Error while loading user details."
+                            );
+                        }
+
+                    });
+
+                }
+            );
+
+
+            // =========================
+            // UPDATE
+            // =========================
+
+            $("#btnUpdateUser").click(function () {
+
+                var userId =
+                    $("#txtUserId").val();
+
+                var firstName =
+                    $("#txtFirstName").val();
+
+                var lastName =
+                    $("#txtLastName").val();
+
+                var email =
+                    $("#txtEditEmail").val();
+
+                var roleId =
+                    $("#txtRole").val();
+
+
+                $.ajax({
+
+                    url:
+                        "/Admin/Admin/UpdateUser",
+
+                    type: "POST",
+
+                    data: {
+
+                        UserId: userId,
+
+                        FirstName: firstName,
+
+                        LastName: lastName,
+
+                        Email: email,
+
+                        RoleId: roleId
+                    },
+
+                    success: function (response) {
+
+                        if (response.success) {
+
+                            alert(
+                                response.message
+                            );
+
+                            $("#userModal")
+                                .modal("hide");
+
+                            $("#btnSearchEmployee")
+                                .click();
+
+                        }
+                        else {
+
+                            alert(
+                                "Update failed."
+                            );
+                        }
+
+                    },
+
+                    error: function () {
+
+                        alert(
+                            "Error while updating user."
+                        );
+                    }
+
+                });
+
+            });
+
+
+            // =========================
+            // CLOSE MODAL
+            // =========================
+
+            $("#btnCloseUserModal").click(function () {
+
+                $("#userModal")
+                    .modal("hide");
+
+            });
+
+
+            // =========================
+            // ACTIVATE / DEACTIVATE
+            // =========================
+
+            $(document).on(
+                "click",
+                "#employeeSearchGrid .btn-status",
+                function () {
+
+                    var userId =
+                        $(this).data("id");
+
+                    var isActive =
+                        $(this).data("status") === true ||
+                        $(this).data("status") === "true";
+
+
+                    $.ajax({
+
+                        url:
+                            "/Admin/Admin/UpdateUserStatus",
+
+                        type: "POST",
+
+                        data: {
+
+                            UserId: userId,
+
+                            IsActive: isActive
+                        },
+
+                        success: function (response) {
+
+                            if (response.success) {
+
+                                alert(
+                                    response.message
+                                );
+
+                                $("#btnSearchEmployee")
+                                    .click();
+
+                            }
+                            else {
+
+                                alert(
+                                    "Unable to update user status."
+                                );
+                            }
+
+                        },
+
+                        error: function () {
+
+                            alert(
+                                "Error while updating user status."
+                            );
+                        }
+
+                    });
+
+                }
+            );
+
+        });
+
+    </script>
+}

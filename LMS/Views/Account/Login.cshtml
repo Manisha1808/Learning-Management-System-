@@ -1,32 +1,9 @@
 ﻿@model LMS.Models.Login
+    @{ 
+        Layout = "~/Views/Shared/_Layout.cshtml";
 
-<style>
-    .validation-message {
-        color: red;
-        font-size: 13px;
-        display: block;
-        margin-top: 4px;
-    }
-
-    .error-message {
-        color: red;
-        margin-top: 15px;
-    }
-
-    span {
-        color: red;
-    }
-
-    .btn-login {
-        padding: 10px 25px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-</style>
-
-<div class="login-container">
+        }
+<div class="form-page-container">
 
     <h2>LMS Login</h2>
 
@@ -35,17 +12,21 @@
         <div class="form-group">
             <label><span>*</span> Email</label>
 
-            @Html.TextBoxFor(m => m.Email,new { @class = "form-control", type = "email" })
+            @Html.TextBoxFor(m => m.Email,
+                new { @class = "form-control", type = "email" })
 
-            @Html.ValidationMessageFor(m => m.Email,"",new { @class = "validation-message" }
-            )
+            @Html.ValidationMessageFor(m => m.Email, "",
+                new { @class = "validation-message" })
         </div>
 
         <div class="form-group">
             <label><span>*</span> Password</label>
 
-            @Html.PasswordFor(m => m.Password,new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Password,"",new { @class = "validation-message" })
+            @Html.PasswordFor(m => m.Password,
+                new { @class = "form-control" })
+
+            @Html.ValidationMessageFor(m => m.Password, "",
+                new { @class = "validation-message" })
         </div>
 
         <button type="submit" class="btn-login">
@@ -57,6 +38,6 @@
 
 </div>
 
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <script src="~/Scripts/jquery.validate.min.js"></script>
-<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@

@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Quiz Result";
+    Layout = "~/Areas/Employee/Views/Shared/_Layout.cshtml";
+
+    int score = ViewBag.Score;
+    int totalQuestions = ViewBag.TotalQuestions;
+    int percentage = ViewBag.Percentage;
+
+    bool isPassed = percentage >= 60;
+}
+
+<div style="max-width:600px; margin:40px auto; text-align:center;">
+
+    <h2>Quiz Result</h2>
+
+    <hr />
+
+    <h3>
+        Score: @score / @totalQuestions
+    </h3>
+
+    <h3>
+        Percentage: @percentage%
+    </h3>
+
+    @if (isPassed)
+    {
+        <h3 style="color:green;">
+            ✓ Quiz Passed
+        </h3>
+
+        <p>Congratulations! You have passed the quiz.</p>
+
+        <a href="@Url.Action("GetCertificate", "Employee",
+        new { area = "Employee", courseId = ViewBag.CourseId })"
+           class="btn btn-success">
+            Get Certificate
+        </a>
+    }
+    else
+    {
+        <h3 style="color:red;">
+            ✗ Quiz Failed
+        </h3>
+
+        <p>You need at least 60% to pass the quiz.</p>
+
+        <button type="button" class="btn btn-primary"
+                onclick="history.back()">
+            Try Again
+        </button>
+    }
+
+</div>

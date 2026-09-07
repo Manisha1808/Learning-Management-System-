@@ -1,0 +1,83 @@
+﻿@using System.Linq
+@model LMS.Areas.Employee.Models.EmployeeCourse
+
+@{
+    ViewBag.Title = "Course Content";
+    Layout = "~/Areas/Employee/Views/Shared/_Layout.cshtml"; ;
+
+    var videos = ViewBag.Videos as List<LMS.Areas.Employee.Models.Video>;
+    var progress = ViewBag.Progress as List<LMS.Areas.Employee.Models.VideoProgress>;
+    var courseProgress = ViewBag.CourseProgress as LMS.Areas.Employee.Models.CourseProgress;
+}
+<h2>@Model.CourseName Course</h2>
+
+<h3>Course Videos</h3>
+<center>
+    @if (courseProgress != null && courseProgress.TotalVideos > 0)
+    {
+        int percentage =
+            (courseProgress.CompletedVideos * 100)
+            / courseProgress.TotalVideos;
+
+        <p>
+            Progress:
+            @courseProgress.CompletedVideos /
+            @courseProgress.TotalVideos videos completed
+        </p>
+
+        <div class="progress" style="width:500px;">
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width:@percentage%;">
+                @percentage%
+            </div>
+        </div>
+
+        <br />
+    }
+</center>
+@if (videos != null && videos.Count > 0)
+{
+    foreach (var video in videos)
+    {
+        var videoProgress = progress?
+            .FirstOrDefault(p => p.VideoId == video.VideoId);
+
+        <div style="margin-bottom:20px;">
+
+            <h4>@video.SequenceNo. @video.VideoTitle</h4>
+
+            <p>@video.Description</p>
+
+            @if (videoProgress != null && videoProgress.IsCompleted)
+            {
+                <span style="color:green;">
+                    ✓ Completed
+                </span>
+
+                <br />
+                <br />
+            }
+
+            <a href="@Url.Action("WatchVideo", "Employee",
+                    new { area = "Employee", id = video.VideoId })"
+               class="btn btn-primary">
+                Watch Video
+            </a>
+
+        </div>
+    }
+}
+else
+{
+    <p>No videos available for this course.</p>
+}
+@if (Model.Status == "Completed") 
+{
+<br />
+
+                <a href="@Url.Action("Quiz", "Employee",
+        new { area = "Employee", id = Model.CourseId })"
+                   class="btn btn-success">
+                    Start Quiz
+                </a>}

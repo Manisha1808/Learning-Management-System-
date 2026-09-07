@@ -1,0 +1,50 @@
+﻿@model LMS.Areas.Employee.Models.Video
+
+@{
+    ViewBag.Title = "Watch Video";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.VideoTitle</h2>
+
+<p>@Model.Description</p>
+
+<video id="courseVideo" width="800" controls>
+    <source src="@Model.VideoUrl" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+<br />
+<br />
+
+<p id="completeMessage" style="margin-top:10px;"></p>
+<a href="@Url.Action("CourseContent", "Employee", new { area = "Employee", id = Model.CourseId })"
+   class="btn btn-default">
+    Back to Course
+</a>
+
+@section scripts
+{
+    <script>
+        $("#courseVideo").on("ended", function () {
+
+            var videoId = @Model.VideoId;
+
+            $.ajax({
+                url: '@Url.Action("MarkVideoCompleted", "Employee", new { area = "Employee" })',
+                type: 'POST',
+                data: { videoId: videoId },
+
+                success: function (response) {
+                    if (response.success) {
+                        console.log("Video marked as completed.");
+                    }
+                },
+                error: function () {
+                    console.log("Error while marking video completed.");
+                }
+            });
+        });
+        </script>
+    
+}
+

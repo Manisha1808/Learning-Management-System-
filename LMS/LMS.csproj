@@ -140,12 +140,27 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
+    <Compile Include="Areas\Admin\Models\EmployeeSearch.cs" />
+    <Compile Include="Areas\Admin\Models\ManageProfile.cs" />
     <Compile Include="Areas\Admin\Models\RegisterUser.cs" />
+    <Compile Include="Areas\Admin\Models\SearchUser.cs" />
     <Compile Include="Areas\Admin\Models\UserList.cs" />
+    <Compile Include="Areas\Employee\Controllers\EmployeeController.cs" />
     <Compile Include="Areas\Employee\EmployeeAreaRegistration.cs" />
+    <Compile Include="Areas\Employee\Models\Certificate.cs" />
+    <Compile Include="Areas\Employee\Models\CourseProgress.cs" />
+    <Compile Include="Areas\Employee\Models\EmployeeCourse.cs" />
+    <Compile Include="Areas\Employee\Models\ManageProfile.cs" />
+    <Compile Include="Areas\Employee\Models\QuizQuestion.cs" />
+    <Compile Include="Areas\Employee\Models\Video.cs" />
+    <Compile Include="Areas\Employee\Models\VideoProgress.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Content Include="Content\Videos\AccuKnox.mp4" />
+    <Content Include="Content\Videos\MVCArchitecture.mp4" />
     <Content Include="Demo.txt" />
+    <Compile Include="DB\AdminDB.cs" />
+    <Compile Include="DB\EmployeeDB.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -191,7 +206,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Scripts\admin.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\Admin\Views\web.config" />
@@ -203,6 +217,19 @@
     <Content Include="Areas\Admin\Views\Admin\UserList.cshtml" />
     <Content Include="Content\ui.jqgrid.min.css.map" />
     <Content Include="Areas\Admin\Views\Shared\_AdminSidebar.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\Manageprofile.cshtml" />
+    <Content Include="Areas\Employee\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Employee\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\Dashboard.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\MyLearning.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\ManageProfile.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\Course.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\EmployeeSearch.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\WatchVideo.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\CourseContent.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\Quiz.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\QuizResult.cshtml" />
+    <Content Include="Areas\Employee\Views\Employee\Certificate.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -236,9 +263,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Employee\Controllers\" />
     <Folder Include="Areas\Employee\Data\" />
-    <Folder Include="Areas\Employee\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

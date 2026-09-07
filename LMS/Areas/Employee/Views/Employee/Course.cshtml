@@ -1,0 +1,26 @@
+﻿@model LMS.Areas.Employee.Models.EmployeeCourse
+
+@{
+    ViewBag.Title = "Course";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.CourseName Course</h2>
+
+<p>
+    Enrollment Date:
+    @Model.EnrollmentDate.ToString("dd-MM-yyyy")
+</p>
+
+<p>
+    Status:
+    @Model.Status
+</p>
+
+<br />
+
+<a href="@Url.Action("CourseContent", "Employee",
+        new { area = "Employee", id = Model.CourseId })"
+   class="btn btn-primary">
+    Unlock
+</a>

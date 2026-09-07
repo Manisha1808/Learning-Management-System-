@@ -1,0 +1,128 @@
+﻿@model LMS.Areas.Admin.Models.ManageProfile
+
+@{
+    ViewBag.Title = "Manage Profile";
+}
+
+<h2>Manage Profile</h2>
+
+<div style="width:400px;">
+
+    <div>
+        <label>First Name</label>
+        <input type="text"
+               id="txtFirstName"
+               class="form-control"
+               value="@Model.FirstName" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Last Name</label>
+        <input type="text"
+               id="txtLastName"
+               class="form-control"
+               value="@Model.LastName" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Email</label>
+        <input type="text"
+               id="txtEmail"
+               class="form-control"
+               value="@Model.Email" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Phone Number</label>
+        <input type="text"
+               id="txtPhoneNumber"
+               class="form-control"
+               value="@Model.PhoneNumber" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Created By</label>
+        <input type="text"
+               id="txtCreatedBy"
+               class="form-control"
+               value="@Model.CreatedBy"
+               readonly />
+    </div>
+
+    <br />
+
+    <button type="button"
+            id="btnSaveProfile"
+            class="btn btn-success">
+        Save
+    </button>
+
+</div>
+
+<div id="messageDialog" title="LMS" style="display:none;">
+    <p id="messageText"></p>
+</div>
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            $("#messageDialog").dialog({
+                autoOpen: false,
+                modal: true,
+                buttons: {
+                    OK: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            function showMessage(message) {
+                $("#messageText").text(message);
+                $("#messageDialog").dialog("open");
+            }
+
+            $("#btnSaveProfile").click(function () {
+
+                $.ajax({
+                    url: "@Url.Action("ManageProfile", "Admin", new { area = "Admin" })",
+                    type: "POST",
+
+                    data: {
+                        FirstName: $("#txtFirstName").val(),
+                        LastName: $("#txtLastName").val(),
+                        Email: $("#txtEmail").val(),
+                        PhoneNumber: $("#txtPhoneNumber").val()
+                    },
+
+                    success: function (response) {
+
+                        if (response.success) {
+                            showMessage(response.message);
+                        }
+                        else {
+                            showMessage("Profile update failed.");
+                        }
+                    },
+
+                    error: function () {
+                        showMessage("Error while updating profile.");
+                    }
+                });
+
+            });
+
+        });
+
+    </script>
+}

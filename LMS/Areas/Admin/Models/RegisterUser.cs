@@ -19,6 +19,9 @@ namespace LMS.Areas.Admin.Models
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$",ErrorMessage = "Password must contain uppercase, lowercase, number and special character.")]
         public string Password { get; set; }
 
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; }
+
         [Required(ErrorMessage = "Please select a role.")]
         public string Role { get; set; }
         public int? CourseId { get; set; }

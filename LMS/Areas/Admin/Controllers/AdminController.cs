@@ -1,29 +1,20 @@
-﻿using LMS.Areas.Admin.Models;
+﻿using LMS.DB;
+using LMS.Areas.Admin.Models;
 using System;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
 using System.Web.Mvc;
+using System.Collections.Generic;
 
 namespace LMS.Areas.Admin.Controllers
 {
     public class AdminController : Controller
     {
-        protected override void OnActionExecuting(
-         ActionExecutingContext filterContext)
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (Session["UserRole"] == null ||
-                Session["UserRole"].ToString() != "Admin")
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "1")
             {
-                filterContext.Result = RedirectToAction(
-                    "Login",
-                    "Account",
-                    new {area = ""}
-                );
-
+                filterContext.Result = RedirectToAction("Login", "Account", new { area = "" });
                 return;
             }
-
             base.OnActionExecuting(filterContext);
         }
 
@@ -37,11 +28,27 @@ namespace LMS.Areas.Admin.Controllers
         {
             return View();
         }
+
         [HttpGet]
         public ActionResult UserList()
         {
             return View();
         }
+
+        [HttpGet]
+        public ActionResult EmployeeSearch()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult SearchEmployees(EmployeeSearch model)
+        {
+            AdminDB db = new AdminDB();
+            List<UserList> users = db.SearchEmployees(model);
+            return Json(users);
+        }
+
         [HttpPost]
         public JsonResult RegisterUser(RegisterUser model)
         {
@@ -54,9 +61,9 @@ namespace LMS.Areas.Admin.Controllers
                 });
             }
 
-            // Employee must have a course
-            if (Convert.ToInt32(model.Role) == 2 &&
-                !model.CourseId.HasValue)
+            int roleId = Convert.ToInt32(model.Role);
+
+            if (roleId == 2 && !model.CourseId.HasValue)
             {
                 return Json(new
                 {
@@ -65,54 +72,29 @@ namespace LMS.Areas.Admin.Controllers
                 });
             }
 
-            // 1. Hash password  
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-            // 2. Get connection string
-            string connectionString = ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;
+            AdminDB db = new AdminDB();
+            int loggedInUserId = Convert.ToInt32(Session["UserId"]);
 
-            int userId;
+            System.Diagnostics.Debug.WriteLine("LOGGED IN USER ID = " + loggedInUserId);
 
-            // 3. Create User
-            using (SqlConnection con = new SqlConnection(connectionString))
+            int userId = db.CreateUser(model, passwordHash, loggedInUserId);
+
+            // sp_CreateUser returns -1 when email already exists
+            if (userId == -1)
             {
-                using (SqlCommand cmd = new SqlCommand("sp_CreateUser", con))
+                return Json(new
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@FirstName",model.FirstName);
-                    cmd.Parameters.AddWithValue("@LastName",model.LastName);
-                    cmd.Parameters.AddWithValue("@Email",model.Email);
-                    cmd.Parameters.AddWithValue("@PasswordHash",passwordHash);
-                    cmd.Parameters.AddWithValue("@RoleId",Convert.ToInt32(model.Role));
-                    cmd.Parameters.AddWithValue("@IsActive", true);
-                    cmd.Parameters.AddWithValue("@CreatedBy", Convert.ToInt32(Session["UserId"]));
-
-                    con.Open();
-                    userId = Convert.ToInt32(
-                        cmd.ExecuteScalar());
-                }
+                    success = false,
+                    message = "Email already exists."
+                });
             }
 
-            // 4. If Employee, assign Course
-            if (Convert.ToInt32(model.Role) == 2)
+            if (roleId == 2)
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    using (SqlCommand cmd = new SqlCommand("sp_AssignUserCourse",con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@UserId",userId);
-                        cmd.Parameters.AddWithValue("@CourseId",model.CourseId.Value);
-                        cmd.Parameters.AddWithValue("@EnrollmentDate",DateTime.Now);
-                        cmd.Parameters.AddWithValue("@StartDate",DBNull.Value);
-                        cmd.Parameters.AddWithValue("@EndDate",DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Status","Not Started");
-                        cmd.Parameters.AddWithValue("@IsActive",true);
-                        con.Open();
-                        cmd.ExecuteNonQuery();
-                    }
-                }
+                db.AssignUserCourse(userId, model.CourseId.Value);
             }
-            // 5. Return success response
+
             return Json(new
             {
                 success = true,
@@ -120,105 +102,45 @@ namespace LMS.Areas.Admin.Controllers
                 userId = userId
             });
         }
+
         [HttpGet]
         public JsonResult GetUsers()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;       
-            int userid = Convert.ToInt32(Session["UserId"]);
-            var users = new System.Collections.Generic.List<object>();
-            
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {   using (SqlCommand cmd = new SqlCommand("sp_GetUserList", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@LoggedInUserId",userid);
-                    con.Open();
+            AdminDB db = new AdminDB();
+            int loggedInUserId = Convert.ToInt32(Session["UserId"]);
 
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {   while (reader.Read())
-                        {
-                            users.Add(new
-                            {
-                                UserId = Convert.ToInt32(reader["UserId"]),
-                                Name = reader["Name"].ToString(),
-                                Email = reader["Email"].ToString(),
-                                Role = reader["Role"].ToString(),
-                                Course = reader["Course"] == DBNull.Value? "": reader["Course"].ToString(),
-                                EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value? "": Convert.ToDateTime(reader["EnrollmentDate"]).ToString("dd-MMM-yyyy"),
-                                Status = reader["Status"] == DBNull.Value? "" : reader["Status"].ToString(),
-                                CreatedDate = reader["CreatedDate"] == DBNull.Value? "": Convert.ToDateTime(reader["CreatedDate"]).ToString("dd-MMM-yyyy"),
-                                CreatedBy = reader["CreatedBy"] == DBNull.Value? "": reader["CreatedBy"].ToString()
-                            });
-                        }
-                    }
-                }
-            }
-            return Json(
-                users,
-                JsonRequestBehavior.AllowGet
-            );
+            System.Diagnostics.Debug.WriteLine("LOGGED IN USER ID = " + loggedInUserId);
+
+            var users = db.GetUsers(loggedInUserId);
+
+            return Json(users, JsonRequestBehavior.AllowGet);
         }
-        
+
         [HttpGet]
         public JsonResult GetUserById(int id)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;
-            object user = null;
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("sp_GetUserById", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@UserId",id);
-                    con.Open();
+            AdminDB db = new AdminDB();
+            var user = db.GetUserById(id);
 
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            user = new
-                            {
-                                UserId = Convert.ToInt32(reader["UserId"]),
-                                FirstName = reader["FirstName"].ToString(),
-                                LastName = reader["LastName"].ToString(),
-                                Email = reader["Email"].ToString(),
-                                RoleId = Convert.ToInt32(reader["RoleId"]),
-                                CourseId = reader["CourseId"] == DBNull.Value? (int?)null: 
-                                Convert.ToInt32(reader["CourseId"]),
-                                EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value? "":
-                                Convert.ToDateTime(reader["EnrollmentDate"]).ToString("yyyy-MM-dd"),
-                                Status = reader["Status"] == DBNull.Value? "": reader["Status"].ToString()
-                            };
-                        }
-                    }
-                }
-            }
-            return Json(
-                user,
-                JsonRequestBehavior.AllowGet
-            );
+            return Json(user, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult SearchUsers(string searchText, int? roleId)
+        {
+            AdminDB db = new AdminDB();
+            int loggedInUserId = Convert.ToInt32(Session["UserId"]);
+            var users = db.SearchUsers(searchText, roleId, loggedInUserId);
+
+            return Json(users, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        public JsonResult UpdateUser(
-        int UserId,string FirstName,string LastName,string Email,int RoleId)
+        public JsonResult UpdateUser(int UserId, string FirstName, string LastName, string Email, int RoleId, DateTime? StartDate, DateTime? EndDate, bool CourseIsActive)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;
+            AdminDB db = new AdminDB();
+            db.UpdateUser(UserId, FirstName, LastName, Email, RoleId, StartDate, EndDate, CourseIsActive);
 
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("sp_UpdateUser", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@UserId", UserId);
-                    cmd.Parameters.AddWithValue("@FirstName", FirstName);
-                    cmd.Parameters.AddWithValue("@LastName", LastName);
-                    cmd.Parameters.AddWithValue("@Email", Email);
-                    cmd.Parameters.AddWithValue("@RoleId", RoleId);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
-            }
             return Json(new
             {
                 success = true,
@@ -227,26 +149,42 @@ namespace LMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public JsonResult DeleteUser(int UserId)
+        public JsonResult UpdateUserStatus(int UserId, bool IsActive)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;
+            AdminDB db = new AdminDB();
+            db.UpdateUserStatus(UserId, IsActive);
 
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("sp_DeleteUser", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@UserId", UserId);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
-            }
             return Json(new
             {
                 success = true,
-                message = "User deleted successfully."
+                message = IsActive ? "User activated successfully." : "User deactivated successfully."
             });
         }
 
+        [HttpGet]
+        public ActionResult ManageProfile()
+        {
+            int userId = Convert.ToInt32(Session["UserId"]);
+            AdminDB db = new AdminDB();
+            ManageProfile model = db.GetManageProfile(userId);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public JsonResult ManageProfile(ManageProfile model)
+        {
+            int userId = Convert.ToInt32(Session["UserId"]);
+            AdminDB db = new AdminDB();
+
+            db.UpdateProfile(userId, model.FirstName, model.LastName, model.Email, model.PhoneNumber);
+            Session["UserEmail"] = model.Email;
+
+            return Json(new
+            {
+                success = true,
+                message = "Profile updated successfully."
+            });
+        }
     }
 }

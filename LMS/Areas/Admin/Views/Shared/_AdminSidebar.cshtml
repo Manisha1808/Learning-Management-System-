@@ -1,18 +1,24 @@
 ﻿<div class="admin-sidebar">
-
-    @Html.ActionLink("Register User","RegisterUser","Admin",
+     @Html.ActionLink("Home","Dashboard","Admin",
         new { area = "Admin" },
         new { @class = "sidebar-btn" }
     )
 
-    @Html.ActionLink("User List","UserList","Admin",
+
+    @Html.ActionLink("Register User", "RegisterUser", "Admin",
         new { area = "Admin" },
         new { @class = "sidebar-btn" }
     )
 
-    @Html.ActionLink("Search Emp","SearchEmployee","Admin",
+    @Html.ActionLink("User List", "UserList", "Admin",
         new { area = "Admin" },
         new { @class = "sidebar-btn" }
     )
+
+    @Html.ActionLink("Search Employee","EmployeeSearch","Admin",
+        new { area = "Admin" },
+        new { @class = "sidebar-btn" }
+    )
+
 
 </div>

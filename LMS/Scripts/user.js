@@ -2,6 +2,22 @@
 
     debugger;
 
+    function showMessage(message) {
+        $("#messageText").text(message);
+        $("#messageDialog").dialog("open");
+    }
+
+    $("#messageDialog").dialog({
+        autoOpen: false,
+        modal: true,
+        buttons: {
+            OK: function () {
+                $(this).dialog("close");
+            }
+        }
+    });
+
+   
     $("#userGrid").jqGrid({
         url: "/Admin/Admin/GetUsers",
         datatype: "json",
@@ -11,7 +27,7 @@
             "Role",
             "Course",
             "Enrollment Date",
-            "Status",
+            "UserStatus",
             "Created Date",
             "Created By",
             "Actions"
@@ -31,14 +47,15 @@
             },
             {
                 name: "Course",
-                width: 100
+                width: 100,
             },
             {
                 name: "EnrollmentDate",
-                width: 150
+                width: 150,
+              
             },
             {
-                name: "Status",
+                name: "UserStatus",
                 width: 100
             },
             {
@@ -51,25 +68,84 @@
             },
             {
                 name: "Actions",
-                width: 160,
+                width: 180,
                 sortable: false,
+
                 formatter: function (cellvalue, options, rowObject) {
+
+                    var statusButton = "";
+
+                    if (rowObject.UserStatus === "Active") {
+
+                        statusButton =
+                            '<button type="button" ' +
+                            'class="btn btn-warning btn-sm btn-status" ' +
+                            'data-id="' + rowObject.UserId + '" ' +
+                            'data-status="false">' +
+                            'Deactivate</button>';
+
+                    }
+                    else {
+
+                        statusButton =
+                            '<button type="button" ' +
+                            'class="btn btn-success btn-sm btn-status" ' +
+                            'data-id="' + rowObject.UserId + '" ' +
+                            'data-status="true">' +
+                            'Activate</button>';
+                    }
                     return '<button type="button" ' +
                         'class="btn btn-primary btn-sm btn-edit" ' +
                         'data-id="' + rowObject.UserId + '">' +
                         'Edit</button> ' +
-
-                        '<button type="button" ' +
-                        'class="btn btn-danger btn-sm btn-delete" ' +
-                        'data-id="' + rowObject.UserId + '">' +
-                        'Delete</button>';
+                        statusButton;
                 }
             }
         ]
+
+
+    });
+    
+    // SEARCH
+    $("#btnSearchUser").click(function () {
+
+        var searchText = $("#txtSearchUser").val();
+        var roleId = $("#ddlSearchRole").val();
+
+        if (roleId === "") {
+            roleId = null;
+        }
+
+        $("#userGrid")
+            .jqGrid("setGridParam", {
+                url: "/Admin/Admin/SearchUsers",
+                datatype: "json",
+                postData: {
+                    SearchText: searchText,
+                    RoleId: roleId
+                }
+            })
+            .trigger("reloadGrid");
     });
 
+
+    // CLEAR
+    $("#btnClearSearch").click(function () {
+
+        $("#txtSearchUser").val("");
+        $("#ddlSearchRole").val("");
+
+        $("#userGrid")
+            .jqGrid("setGridParam", {
+                url: "/Admin/Admin/GetUsers",
+                datatype: "json",
+                postData: {}
+            })
+            .trigger("reloadGrid");
+    });
+    
     // EDIT
-     $(document).on("click", ".btn-edit", function () {
+    $(document).on("click", ".btn-edit", function () {
         var userId = $(this).data("id");
         $.ajax({
             url: "/Admin/Admin/GetUserById",
@@ -82,93 +158,118 @@
                     $("#txtLastName").val(response.LastName);
                     $("#txtEmail").val(response.Email);
                     $("#txtRole").val(response.RoleId);
+                    
+                    $("#txtStartDate").val(response.StartDate);
+                    $("#txtEndDate").val(response.EndDate);
+                    $("#chkCourseActive").prop("checked", response.CourseIsActive);
                     $("#userModal").modal("show");
                 }
             },
             error: function () {
-                alert("Error while loading user details.");
+                showMessage("Error while loading user details.");
             }
         });
-});
+    });
 
     // UPDATE
     $("#btnUpdateUser").click(function () {
+
         var userId = $("#txtUserId").val();
         var firstName = $("#txtFirstName").val();
         var lastName = $("#txtLastName").val();
         var email = $("#txtEmail").val();
-        var roleText = $("#txtRole").val();
-        var roleId;
-        if (roleText == "Admin") {
-            roleId = 1;
-        }
-        else if (roleText == "Employee") {
-            roleId = 2;
-        }
+        var roleId = $("#txtRole").val();
+        var startdate = $("#txtStartDate").val();
+        var enddate = $("#txtEndDate").val();
+        var courseIsActive = $("#chkCourseActive").is(":checked");
+
         $.ajax({
             url: "/Admin/Admin/UpdateUser",
             type: "POST",
+
             data: {
                 UserId: userId,
                 FirstName: firstName,
                 LastName: lastName,
                 Email: email,
-                RoleId: roleId
+                RoleId: roleId,
+                StartDate: startdate,
+                EndDate: enddate,
+                CourseIsActive: courseIsActive
             },
+
             success: function (response) {
+
                 if (response.success) {
-                    alert(response.message);
+
+                    showMessage(response.message);
+
                     $("#userModal").modal("hide");
-        
-                    $("#userGrid").jqGrid(
-                        "setGridParam",
-                        {
+
+                    $("#userGrid")
+                        .jqGrid("setGridParam", {
                             datatype: "json"
-                        }
-                    ).trigger("reloadGrid");
+                        })
+                        .trigger("reloadGrid");
                 }
                 else {
-                    alert("Update failed.");
+                    showMessage("Update failed.");
                 }
-
             },
-            error: function () { alert("Error while updating user."); }
+
+            error: function () {
+                showMessage("Error while updating user.");
+            }
         });
     });
-
     // CLOSE
-     $("#btnCloseUserModal").click(function () {
+    $("#btnCloseUserModal").click(function () {
         $("#userModal").modal("hide");
     });
 
-    // DELETE
-    $(document).on("click", ".btn-delete", function () {
+    // ACTIVATE / DEACTIVATE
+     $(document).on("click", ".btn-status", function () {
+
         var userId = $(this).data("id");
-        var result = confirm( "Are you sure you want to delete this user?");
-        if (result) {
-            $.ajax({
-                url: "/Admin/Admin/DeleteUser",
-                type: "POST",
-                data: { UserId: userId },
-                success: function (response) {
-                    if (response.success) {
-                        alert(response.message);
-                        $("#userGrid")
-                            .setGridParam({
-                                datatype: "json"
-                            })
-                            .trigger("reloadGrid");
-                    }
-                    else {
-                        alert("Delete failed.");
-                    }
-                },
-                error: function (xhr) {
-                    console.log(xhr.responseText);
-                    alert("Delete Error:\n" + xhr.responseText);
+
+        var isActive = $(this).data("status") === true ||
+            $(this).data("status") === "true";
+
+        $.ajax({
+
+            url: "/Admin/Admin/UpdateUserStatus",
+
+            type: "POST",
+
+            data: {
+                UserId: userId,
+                IsActive: isActive
+            },
+
+            success: function (response) {
+
+                if (response.success) {
+
+                    showMessage(response.message);
+
+                    $("#userGrid")
+                        .jqGrid("setGridParam", {
+                            datatype: "json"
+                        })
+                        .trigger("reloadGrid");
                 }
-            });
-        }
+                else {
+
+                    showMessage("Unable to update user status.");
+                }
+            },
+
+            error: function () {
+
+                showMessage("Error while updating user status.");
+            }
+        });
     });
+
 });
 

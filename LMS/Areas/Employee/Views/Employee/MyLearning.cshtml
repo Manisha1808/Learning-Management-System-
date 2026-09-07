@@ -1,0 +1,184 @@
+﻿@model List<LMS.Areas.Employee.Models.EmployeeCourse>
+
+<style>
+    .learning-container {
+        max-width: 850px;
+        margin: 30px auto;
+    }
+
+    .learning-title {
+        margin-bottom: 30px;
+    }
+
+    .course-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 30px;
+        background: #fff;
+    }
+
+    .course-name {
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+
+    .course-description {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    .progress-info {
+        margin-bottom: 8px;
+    }
+
+    .progress {
+        height: 22px;
+        margin-bottom: 25px;
+    }
+
+    .video-section-title {
+        margin-bottom: 12px;
+    }
+
+    .video-list {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+
+    .video-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .video-row:last-child {
+            border-bottom: none;
+        }
+
+    .video-title {
+        font-weight: 500;
+    }
+
+    .completed {
+        color: green;
+    }
+
+    .incomplete {
+        color: #777;
+    }
+
+    .continue-btn {
+        margin-top: 5px;
+    }
+</style>
+
+<div class="learning-container">
+
+    <h2 class="learning-title">My Learning</h2>
+
+    @foreach (var course in Model)
+    {
+        var progress =
+            ((Dictionary<int, LMS.Areas.Employee.Models.CourseProgress>)
+            ViewBag.ProgressList)[course.CourseId];
+
+        var videoProgress =
+            ((Dictionary<int, List<LMS.Areas.Employee.Models.VideoProgress>>)
+            ViewBag.VideoProgressList)[course.CourseId];
+
+        int percentage = 0;
+
+    // Calculated the percentage 
+        if (progress != null && progress.TotalVideos > 0)
+        {
+            percentage =
+                (progress.CompletedVideos * 100) /
+                progress.TotalVideos;
+        }
+
+<div class="course-card">
+
+    <h2 class="course-name">
+        @course.CourseName
+    </h2>
+
+    <p class="course-description">
+        @course.Description
+    </p>
+    <p>
+        <strong>Start Date:</strong>
+        @(course.StartDate.HasValue
+        ? course.StartDate.Value.ToString("dd-MM-yyyy")
+        : "Not Started")
+    </p>
+
+    <p>
+        <strong>Deadline:</strong>
+        @(course.EndDate.HasValue
+        ? course.EndDate.Value.ToString("dd-MM-yyyy")
+        : "Not Started")
+    </p>
+
+
+    <div class="progress-info">
+        <strong>Progress:</strong>
+        @progress.CompletedVideos /
+        @progress.TotalVideos videos completed
+    </div>
+
+    <div class="progress">
+        <div class="progress-bar"
+             role="progressbar"
+             style="width:@percentage%;">
+            @percentage%
+        </div>
+    </div>
+
+    <h4 class="video-section-title">
+        Course Videos
+    </h4>
+
+    <div class="video-list">
+
+        @foreach (var video in videoProgress)
+        {
+            <div class="video-row">
+                <span class="video-title">
+                    @if (video.IsCompleted)
+                    {<span class="completed">✓</span>}
+                    else
+                    {
+                        <span class="incomplete">○</span>
+                    }
+                    @video.VideoTitle
+                </span>
+                @if (video.IsCompleted)
+                {
+                    <span class="completed">
+                        Completed
+                    </span>
+                }
+                else
+                {
+                    <span class="incomplete">
+                        Incomplete
+                    </span>
+                }
+            </div>
+        }
+
+    </div>
+    <a href="@Url.Action("ContinueLearning", "Employee",
+             new { area = "Employee", id = course.CourseId })"
+       class="btn btn-primary continue-btn">
+        Continue Learning
+    </a>
+</div>
+    }
+
+</div>

@@ -1,6 +1,7 @@
 ﻿@model LMS.Areas.Admin.Models.RegisterUser
 <link href="~/Content/style.css" rel="stylesheet" />
-
+ @{ Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; }
+@*<div class="form-page-container">*@
 <h2> Registration Form </h2>
 
 @using (Html.BeginForm("RegisterUser", "Admin", FormMethod.Post, new { id = "registerForm" }))
@@ -8,45 +9,49 @@
     <div class="form-group">
         <label><span>*</span> First Name</label>
         @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.FirstName,"",new { @class = "validation-message" })
+        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "validation-message" })
     </div>
 
     <div class="form-group">
         <label><span>*</span> Last Name</label>
         @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.LastName,"",new { @class = "validation-message" })
+        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "validation-message" })
     </div>
 
     <div class="form-group">
         <label><span>*</span> Email</label>
-        @Html.TextBoxFor(m => m.Email,new { @class = "form-control", type = "email" })
-        @Html.ValidationMessageFor(m => m.Email,"",new { @class = "validation-message" })
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-message" })
     </div>
 
     <div class="form-group">
         <label><span>*</span> Password</label>
-        @Html.PasswordFor(m => m.Password,new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Password,"",new { @class = "validation-message" })
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validation-message" })
     </div>
-
+    <div class="form-group">
+        <label><span>*</span> Confirm Password</label>
+        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "validation-message" })
+    </div>
     <div class="form-group">
         <label><span>*</span> Role</label>
-        @Html.DropDownListFor(m => m.Role,new List<SelectListItem>
+        @Html.DropDownListFor(m => m.Role, new List<SelectListItem>
             {
                 new SelectListItem { Text = "Admin", Value = "1" },
                 new SelectListItem { Text = "Employee", Value = "2" }
-            },"-- Select Role --",new { @class = "form-control", id = "Role" })
-        @Html.ValidationMessageFor(m => m.Role,"",new { @class = "validation-message" })
+            }, "-- Select Role --", new { @class = "form-control", id = "Role" })
+        @Html.ValidationMessageFor(m => m.Role, "", new { @class = "validation-message" })
     </div>
 
     <div id="courseDiv" class="form-group" style="display:none;">
         <label><span>*</span> Course</label>
-        @Html.DropDownListFor(m => m.CourseId,new List<SelectListItem>
+        @Html.DropDownListFor(m => m.CourseId, new List<SelectListItem>
             {
                 new SelectListItem { Text = "MVC", Value = "1" },
                 new SelectListItem { Text = "Azure", Value = "2" }
-            },"-- Select Course --",new { @class = "form-control", id = "Course" })
-        @Html.ValidationMessageFor(m => m.CourseId,"",new { @class = "validation-message" })
+            }, "-- Select Course --", new { @class = "form-control", id = "Course" })
+        @Html.ValidationMessageFor(m => m.CourseId, "", new { @class = "validation-message" })
     </div>
 
     <div class="button-container">
@@ -59,9 +64,77 @@
             Back
         </button>
     </div>
- }
 
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+}
+@*</div>*@
+<div id="messageDialog" title="LMS" style="display:none;">
+    <p id="messageText"></p>
+</div>
+
+@section scripts
+    {
+    <script>
+        $(document).ready(function () {
+
+            function showMessage(message) {
+                $("#messageText").text(message);
+                $("#messageDialog").dialog("open");
+            }
+
+            $("#messageDialog").dialog({
+                autoOpen: false,
+                modal: true,
+                buttons: {
+                    OK: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            // REGISTER USER
+
+            function toggleCourse() {
+
+                if ($("#Role").val() == "2") {
+                    $("#courseDiv").show();
+                }
+                else {
+                    $("#courseDiv").hide();
+                    $("#Course").val("");
+                }
+            }
+
+            $("#Role").change(function () {
+                toggleCourse();
+            });
+
+            toggleCourse();
+
+            $("#registerForm").submit(function (e) {
+
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/Admin/Admin/RegisterUser',
+                    type: 'POST',
+                    data: $(this).serialize(),
+
+                    success: function (response) {
+                        showMessage(response.message);
+                    },
+
+                    error: function (xhr) {
+                        showMessage("Error: " + xhr.status);
+                        console.log(xhr.responseText);
+                    }
+                });
+
+            });
+
+        });
+    </script>
+}
+@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <script src="~/Scripts/jquery.validate.min.js"></script>
-<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-<script src="~/Scripts/admin.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+

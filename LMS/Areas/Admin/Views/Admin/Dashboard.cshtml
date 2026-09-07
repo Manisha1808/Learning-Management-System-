@@ -3,7 +3,15 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<center> <h2>ADMIN DASHBOARD</h2>  </center>
+<div class="dashboard-header">
 
+    <h2>ADMIN DASHBOARD</h2>
+
+    <a href="@Url.Action("ManageProfile", "Admin", new { area = "Admin" })"
+       class="manage-profile-btn">
+        Manage<br />
+    </a>
+
+</div>
 
 
