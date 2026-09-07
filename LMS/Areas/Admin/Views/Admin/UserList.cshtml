@@ -55,19 +55,21 @@
 
                 <div>
                     <label>Role</label>
-                    <select id="txtRole" class="form-control">
-                        <option value="">-- Select Role --</option>
-                        <option value="1">Admin</option>
-                        <option value="2">Employee</option>
-                    </select>
+                @Html.DropDownList(
+                "txtRole",
+                (IEnumerable<SelectListItem>)ViewBag.Roles,
+                "-- Select Role --",
+                new { @class = "form-control", id = "txtRole" }
+                )
                 </div>
                 <div id="editCourseDiv" style="display:none;">
                     <label>Course</label>
-                    <select id="txtCourse" class="form-control">
-                        <option value="">-- Select Course --</option>
-                        <option value="1">MVC</option>
-                        <option value="2">Azure</option>
-                    </select>
+                    @Html.DropDownList(
+                "txtCourse",
+                (IEnumerable<SelectListItem>)ViewBag.Courses,
+                "-- Select Course --",
+                new { @class = "form-control", id = "txtCourse" }
+                )
                 </div>
                 <br />
                 <br />
