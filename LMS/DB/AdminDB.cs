@@ -31,6 +31,29 @@ namespace LMS.DB
 
             return userId;
         }
+        public List<SelectListItem> GetRoles()
+        {
+            List<SelectListItem> roles = new List<SelectListItem>();
+
+            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand("sp_GetRoles", con))
+            {
+               cmd.CommandType = CommandType.StoredProcedure;
+               con.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        roles.Add(new SelectListItem
+                        {
+                            Text = reader["RoleName"].ToString(),
+                            Value = reader["RoleId"].ToString()
+                        });
+                    }
+                }
+            }
+            return roles;
+        }
         public List<SelectListItem> GetCourses()
         {
             List<SelectListItem> courses = new List<SelectListItem>();
@@ -96,10 +119,10 @@ namespace LMS.DB
                             Email = reader["Email"].ToString(),
                             Role = reader["Role"].ToString(),
                             Course = reader["Course"] == DBNull.Value ? "NA" : reader["Course"].ToString(),
-                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? "NA" : Convert.ToDateTime(reader["EnrollmentDate"]).ToString("dd-MMM-yyyy"),
+                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EnrollmentDate"]),
                             Status = reader["Status"] == DBNull.Value ? "" : reader["Status"].ToString(),
                             UserStatus = reader["UserStatus"] == DBNull.Value ? "" : reader["UserStatus"].ToString(),
-                            CreatedDate = reader["CreatedDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["CreatedDate"]).ToString("dd-MMM-yyyy"),
+                            CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
                             CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString()
                         });
                     }
@@ -130,10 +153,10 @@ namespace LMS.DB
                             Email = reader["Email"].ToString(),
                             Role = reader["Role"].ToString(),
                             Course = reader["Course"] == DBNull.Value ? "" : reader["Course"].ToString(),
-                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["EnrollmentDate"]).ToString("dd-MMM-yyyy"),
+                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value? (DateTime?)null: Convert.ToDateTime(reader["EnrollmentDate"]),
                             Status = reader["Status"] == DBNull.Value ? "" : reader["Status"].ToString(),
                             UserStatus = reader["UserStatus"].ToString(),
-                            CreatedDate = reader["CreatedDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["CreatedDate"]).ToString("dd-MMM-yyyy"),
+                            CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
                             CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString()
                         });
                     }
@@ -142,52 +165,20 @@ namespace LMS.DB
 
             return users;
         }
-        public List<SearchUser> SearchEmployees(
-      string Name,
-      string email,
-      int? roleId,
-      int? courseId,
-      string status,
-      DateTime? fromDate,
-      DateTime? toDate)
+        public List<SearchUser> SearchEmployees(string Name,string email,int? roleId,int? courseId,string status,DateTime? fromDate,DateTime? toDate)
         {
             List<SearchUser> employees = new List<SearchUser>();
-
             using (SqlConnection con = new SqlConnection(connectionString))
             using (SqlCommand cmd = new SqlCommand("sp_SearchEmployees", con))
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue(
-                    "@EmployeeName",
-                    (object)Name ?? DBNull.Value);
-
-                cmd.Parameters.AddWithValue(
-                    "@Email",
-                    (object)email ?? DBNull.Value);
-
-                cmd.Parameters.AddWithValue(
-                    "@RoleId",
-                    (object)roleId ?? DBNull.Value);
-
-                cmd.Parameters.AddWithValue(
-                    "@CourseId",
-                    (object)courseId ?? DBNull.Value);
-
-                cmd.Parameters.AddWithValue(
-                    "@Status",
-                    (object)status ?? DBNull.Value);
-
-                cmd.Parameters.AddWithValue(
-                    "@FromDate",
-                    (object)fromDate ?? DBNull.Value);
-
-                cmd.Parameters.AddWithValue(
-                    "@ToDate",
-                    (object)toDate ?? DBNull.Value);
-
+                cmd.Parameters.AddWithValue("@EmployeeName", (object)Name ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Email", (object)email ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@RoleId", (object)roleId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@CourseId", (object)courseId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Status", (object)status ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@FromDate", (object)fromDate ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ToDate", (object)toDate ?? DBNull.Value);
                 con.Open();
-
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -195,31 +186,14 @@ namespace LMS.DB
                         employees.Add(new SearchUser
                         {
                             UserId = Convert.ToInt32(reader["UserId"]),
-
                             Name = reader["Name"].ToString(),
-
                             Email = reader["Email"].ToString(),
-
                             Role = reader["Role"].ToString(),
-
-                            Course = reader["Course"] == DBNull.Value
-                                ? ""
-                                : reader["Course"].ToString(),
-
-                            EnrollmentDate =
-                                reader["EnrollmentDate"] == DBNull.Value
-                                ? (DateTime?)null
-                                : Convert.ToDateTime(reader["EnrollmentDate"]),
-
+                            Course = reader["Course"] == DBNull.Value ? "" : reader["Course"].ToString(),
+                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EnrollmentDate"]),
                             UserStatus = reader["UserStatus"].ToString(),
-
-                            CreatedDate =
-                                Convert.ToDateTime(reader["CreatedDate"]),
-
-                            CreatedBy =
-                                reader["CreatedBy"] == DBNull.Value
-                                ? ""
-                                : reader["CreatedBy"].ToString()
+                            CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
+                            CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString()
                         });
                     }
                 }
@@ -248,10 +222,9 @@ namespace LMS.DB
                             Email = reader["Email"].ToString(),
                             RoleId = Convert.ToInt32(reader["RoleId"]),
                             CourseId = reader["CourseId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["CourseId"]),
-                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["EnrollmentDate"]).ToString("yyyy-MM-dd"),
-                            Status = reader["Status"] == DBNull.Value ? "" : reader["Status"].ToString(),
-                            StartDate = reader["StartDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["StartDate"]).ToString("yyyy-MM-dd"),
-                            EndDate = reader["EndDate"] == DBNull.Value ? "" : Convert.ToDateTime(reader["EndDate"]).ToString("yyyy-MM-dd"),
+                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EnrollmentDate"]),
+                            StartDate = reader["StartDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["StartDate"]),
+                            EndDate = reader["EndDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EndDate"]),
                             CourseIsActive = reader["CourseIsActive"] == DBNull.Value ? false : Convert.ToBoolean(reader["CourseIsActive"]),
                         };
                     }

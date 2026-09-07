@@ -1,5 +1,4 @@
 ﻿using System;
-
 namespace LMS.Areas.Employee.Models
 {
     public class VideoProgress

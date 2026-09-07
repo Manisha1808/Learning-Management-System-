@@ -52,7 +52,15 @@
             {
                 name: "EnrollmentDate",
                 width: 150,
-              
+                formatter: function (cellvalue) {
+                    if (!cellvalue) {
+                        return "N/A";
+                    }
+                    var date = new Date(parseInt(cellvalue.substr(6)));
+                    return ("0" + date.getDate()).slice(-2) + "-" +
+                        ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+                        date.getFullYear();
+                }
             },
             {
                 name: "UserStatus",
@@ -60,7 +68,12 @@
             },
             {
                 name: "CreatedDate",
-                width: 100
+                formatter: function (cellvalue) {
+                    var date = new Date(parseInt(cellvalue.substr(6)));
+                    return ("0" + date.getDate()).slice(-2) + "-" +
+                        ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+                        date.getFullYear();
+                }
             },
             {
                 name: "CreatedBy",
@@ -108,14 +121,11 @@
     
     // SEARCH
     $("#btnSearchUser").click(function () {
-
         var searchText = $("#txtSearchUser").val();
         var roleId = $("#ddlSearchRole").val();
-
         if (roleId === "") {
             roleId = null;
         }
-
         $("#userGrid")
             .jqGrid("setGridParam", {
                 url: "/Admin/Admin/SearchUsers",
@@ -128,10 +138,8 @@
             .trigger("reloadGrid");
     });
 
-
     // CLEAR
     $("#btnClearSearch").click(function () {
-
         $("#txtSearchUser").val("");
         $("#ddlSearchRole").val("");
 
@@ -140,8 +148,7 @@
                 url: "/Admin/Admin/GetUsers",
                 datatype: "json",
                 postData: {}
-            })
-            .trigger("reloadGrid");
+            }).trigger("reloadGrid");
     });
     
     // EDIT
@@ -157,8 +164,7 @@
                     $("#txtFirstName").val(response.FirstName);
                     $("#txtLastName").val(response.LastName);
                     $("#txtEmail").val(response.Email);
-                    $("#txtRole").val(response.RoleId);
-                    
+                    $("#txtRole").val(response.RoleId);                    
                     $("#txtStartDate").val(response.StartDate);
                     $("#txtEndDate").val(response.EndDate);
                     $("#chkCourseActive").prop("checked", response.CourseIsActive);
@@ -199,22 +205,11 @@
             },
 
             success: function (response) {
-
                 if (response.success) {
-
                     showMessage(response.message);
-
                     $("#userModal").modal("hide");
-
-                    $("#userGrid")
-                        .jqGrid("setGridParam", {
-                            datatype: "json"
-                        })
-                        .trigger("reloadGrid");
-                }
-                else {
-                    showMessage("Update failed.");
-                }
+                    $("#userGrid").jqGrid("setGridParam", { datatype: "json" }).trigger("reloadGrid"); }
+                else {showMessage("Update failed.");}
             },
 
             error: function () {
@@ -229,45 +224,25 @@
 
     // ACTIVATE / DEACTIVATE
      $(document).on("click", ".btn-status", function () {
-
         var userId = $(this).data("id");
-
         var isActive = $(this).data("status") === true ||
             $(this).data("status") === "true";
-
         $.ajax({
-
             url: "/Admin/Admin/UpdateUserStatus",
-
             type: "POST",
-
             data: {
                 UserId: userId,
                 IsActive: isActive
             },
-
             success: function (response) {
-
                 if (response.success) {
-
                     showMessage(response.message);
-
-                    $("#userGrid")
-                        .jqGrid("setGridParam", {
-                            datatype: "json"
-                        })
-                        .trigger("reloadGrid");
+                    $("#userGrid").jqGrid("setGridParam", { datatype: "json" }).trigger("reloadGrid");
                 }
-                else {
-
-                    showMessage("Unable to update user status.");
-                }
+                else {showMessage("Unable to update user status.");}
             },
 
-            error: function () {
-
-                showMessage("Error while updating user status.");
-            }
+            error: function () {showMessage("Error while updating user status.");}
         });
     });
 

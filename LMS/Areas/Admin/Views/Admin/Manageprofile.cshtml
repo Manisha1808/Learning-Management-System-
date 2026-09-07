@@ -39,22 +39,20 @@
     <br />
 
     <div>
-        <label>Phone Number</label>
+        <label>Phone No. </label>
         <input type="text"
                id="txtPhoneNumber"
                class="form-control"
                value="@Model.PhoneNumber" />
+
+        <span id="phoneError" style="color:red;"></span>
     </div>
 
     <br />
 
     <div>
         <label>Created By</label>
-        <input type="text"
-               id="txtCreatedBy"
-               class="form-control"
-               value="@Model.CreatedBy"
-               readonly />
+        <label>@Model.CreatedBy</label>
     </div>
 
     <br />
@@ -74,9 +72,7 @@
 @section scripts
 {
     <script>
-
         $(document).ready(function () {
-
             $("#messageDialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -86,38 +82,30 @@
                     }
                 }
             });
-
             function showMessage(message) {
                 $("#messageText").text(message);
                 $("#messageDialog").dialog("open");
             }
-
             $("#btnSaveProfile").click(function () {
-
+                var phone = $("#txtPhoneNumber").val().trim();
+                if (phone !== "" && !/^[6-9][0-9]{9}$/.test(phone)) {
+                    $("#phoneError").text("Enter a valid 10-digit phone number.");
+                    return;
+                }
                 $.ajax({
                     url: "@Url.Action("ManageProfile", "Admin", new { area = "Admin" })",
                     type: "POST",
-
                     data: {
                         FirstName: $("#txtFirstName").val(),
                         LastName: $("#txtLastName").val(),
                         Email: $("#txtEmail").val(),
                         PhoneNumber: $("#txtPhoneNumber").val()
                     },
-
                     success: function (response) {
-
-                        if (response.success) {
-                            showMessage(response.message);
-                        }
-                        else {
-                            showMessage("Profile update failed.");
-                        }
+                        if (response.success) {showMessage(response.message); }
+                        else { showMessage("Profile update failed."); }
                     },
-
-                    error: function () {
-                        showMessage("Error while updating profile.");
-                    }
+                    error: function () {showMessage("Error while updating profile."); }
                 });
 
             });

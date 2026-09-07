@@ -18,7 +18,6 @@
         <label class="control-label col-md-2">
          Name
         </label>
-
         <div class="col-md-6">
             <input type="text"
                    id="txtEmployeeName"
@@ -32,7 +31,6 @@
         <label class="control-label col-md-2">
             Email
         </label>
-
         <div class="col-md-6">
             <input type="text"
                    id="txtEmail"
@@ -46,13 +44,13 @@
         <label class="control-label col-md-2">
             Role
         </label>
-
         <div class="col-md-6">
-            <select id="ddlRole" class="form-control">
-                <option value="">-- Select Role --</option>
-                <option value="1">Admin</option>
-                <option value="2">Employee</option>
-            </select>
+            @Html.DropDownList(
+             "Role",
+             (IEnumerable<SelectListItem>)ViewBag.Roles,
+             "-- Select Role --",
+             new { @class = "form-control", id = "ddlRole" }
+ )
         </div>
     </div>
 
@@ -78,12 +76,12 @@
             </label>
 
             <div class="col-md-6">
-                <select id="ddlStatus" class="form-control">
-                    <option value="">All Status</option>
-                    <option value="Not Started">Not Started</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                </select>
+                 @Html.DropDownList(
+                 "Status",
+                 (IEnumerable<SelectListItem>)ViewBag.Statuses,
+                 "All Status",
+                 new { @class = "form-control", id = "ddlStatus" }
+             )
             </div>
         </div>
 
@@ -205,22 +203,12 @@
                 <div>
                     <label>Role</label>
 
-                    <select id="txtRole"
-                            class="form-control">
-
-                        <option value="">
-                            -- Select Role --
-                        </option>
-
-                        <option value="1">
-                            Admin
-                        </option>
-
-                        <option value="2">
-                            Employee
-                        </option>
-
-                    </select>
+                    @Html.DropDownList(
+                        "txtRole",
+                        (IEnumerable<SelectListItem>)ViewBag.Roles,
+                        "-- Select Role --",
+                        new { @class = "form-control", id = "txtRole" }
+                    )
                 </div>
 
             </div>

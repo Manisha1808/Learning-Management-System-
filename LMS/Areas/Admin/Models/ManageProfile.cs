@@ -1,4 +1,5 @@
-﻿namespace LMS.Areas.Admin.Models
+﻿using System.ComponentModel.DataAnnotations;
+namespace LMS.Areas.Admin.Models
 {
     public class ManageProfile
     {
@@ -6,6 +7,7 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        [RegularExpression(@"^[6-9][0-9]{9}$", ErrorMessage = "Enter a valid 10-digit phone number.")]
         public string PhoneNumber { get; set; }
         public string CreatedBy { get; set; }
     }

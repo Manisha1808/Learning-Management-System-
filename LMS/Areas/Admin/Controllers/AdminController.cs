@@ -27,7 +27,8 @@ namespace LMS.Areas.Admin.Controllers
         public ActionResult RegisterUser()
         {
             AdminDB db = new AdminDB();
-            ViewBag.Courses = db.GetCourses();
+            ViewBag.Roles = db.GetRoles();
+            ViewBag.Courses = db.GetCourses();  //Viewbag is used so that, we are not hardcoding the data and any updates in db will directly added here and visible on view
             return View();
         }
         [HttpGet]
@@ -39,26 +40,16 @@ namespace LMS.Areas.Admin.Controllers
         public ActionResult SearchUser()
         {
             AdminDB db = new AdminDB();
-
+            ViewBag.Roles = db.GetRoles();
             ViewBag.Courses = db.GetCourses();
+            ViewBag.Statuses = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Not Started", Value = "Not Started" }, //Directly save the list here, rather than creating a seperate SP because there wont beany changes in this
+                new SelectListItem { Text = "In Progress", Value = "In Progress" },
+                new SelectListItem { Text = "Completed", Value = "Completed" }
+            };
 
             return View();
-        }
-        [HttpPost]
-        public JsonResult SearchEmployees(SearchUser model)
-        {
-            AdminDB db = new AdminDB();
-
-            var employees = db.SearchEmployees(
-                model.Name,
-                model.Email,
-                model.RoleId,
-                model.CourseId,
-                model.Status,
-                model.FromDate,
-                model.ToDate
-            );
-            return Json(employees);
         }
 
         [HttpPost]
@@ -75,7 +66,7 @@ namespace LMS.Areas.Admin.Controllers
 
             int roleId = Convert.ToInt32(model.Role);
 
-            if (roleId == 2 && !model.CourseId.HasValue)
+            if (roleId == 2 && !model.CourseId.HasValue)   //Choosing course became mandatory, if the role is of Employee
             {
                 return Json(new
                 {
@@ -87,9 +78,6 @@ namespace LMS.Areas.Admin.Controllers
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
             AdminDB db = new AdminDB();
             int loggedInUserId = Convert.ToInt32(Session["UserId"]);
-
-            System.Diagnostics.Debug.WriteLine("LOGGED IN USER ID = " + loggedInUserId);
-
             int userId = db.CreateUser(model, passwordHash, loggedInUserId);
 
             // sp_CreateUser returns -1 when email already exists
@@ -106,7 +94,6 @@ namespace LMS.Areas.Admin.Controllers
             {
                 db.AssignUserCourse(userId, model.CourseId.Value);
             }
-
             return Json(new
             {
                 success = true,
@@ -119,12 +106,8 @@ namespace LMS.Areas.Admin.Controllers
         public JsonResult GetUsers()
         {
             AdminDB db = new AdminDB();
-            int loggedInUserId = Convert.ToInt32(Session["UserId"]);
-
-            System.Diagnostics.Debug.WriteLine("LOGGED IN USER ID = " + loggedInUserId);
-
+            int loggedInUserId = Convert.ToInt32(Session["UserId"]);   //Fetching session wise user Id
             var users = db.GetUsers(loggedInUserId);
-
             return Json(users, JsonRequestBehavior.AllowGet);
         }
 
@@ -133,12 +116,11 @@ namespace LMS.Areas.Admin.Controllers
         {
             AdminDB db = new AdminDB();
             var user = db.GetUserById(id);
-
             return Json(user, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public JsonResult SearchUsers(string searchText, int? roleId)
+        public JsonResult SearchUsers(string searchText, int roleId)
         {
             AdminDB db = new AdminDB();
             int loggedInUserId = Convert.ToInt32(Session["UserId"]);
@@ -169,7 +151,7 @@ namespace LMS.Areas.Admin.Controllers
             return Json(new
             {
                 success = true,
-                message = IsActive ? "User activated successfully." : "User deactivated successfully."
+                message = IsActive ? "User activated successfully." : "User deactivated successfully."  //this is for the dialog box 
             });
         }
 

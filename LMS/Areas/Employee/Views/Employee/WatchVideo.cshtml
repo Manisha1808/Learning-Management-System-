@@ -21,6 +21,12 @@
    class="btn btn-default">
     Back to Course
 </a>
+@if (Model.NextVideoId.HasValue)
+{
+<a href="@Url.Action("WatchVideo", "Employee", new { area = "Employee", id = Model.NextVideoId })"
+   class="btn btn-primary">
+    Next Video
+</a>}
 
 @section scripts
 {
@@ -44,7 +50,7 @@
                 }
             });
         });
-        </script>
-    
+    </script>
+
 }
 

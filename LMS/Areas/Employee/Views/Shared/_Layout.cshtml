@@ -113,16 +113,20 @@
             </a>
         </div>
 
-        <div class="navbar-right">
-
+        <div class="navbar-left">
             <a href="@Url.Action("MyLearning", "Employee", new { area = "Employee" })">
                 My Learning
             </a>
+        </div>
 
+        <div class="navbar-right">
             <a href="@Url.Action("ManageProfile", "Employee", new { area = "Employee" })">
                 Manage Profile
             </a>
 
+            <a href="@Url.Action("Logout", "Account", new { area = "" })">
+                Log Out
+            </a>
         </div>
 
     </nav>

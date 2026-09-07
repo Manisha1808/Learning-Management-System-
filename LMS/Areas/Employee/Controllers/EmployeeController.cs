@@ -33,10 +33,8 @@ namespace LMS.Areas.Employee.Controllers
             Dictionary<int, List<VideoProgress>> videoProgressList = new Dictionary<int, List<VideoProgress>>();
             foreach (var course in courses)
             {
-                progressList[course.CourseId] =
-                    db.GetCourseProgress(userId, course.CourseId);
-                videoProgressList[course.CourseId] =
-                    db.GetCourseVideoProgress(userId, course.CourseId);
+                progressList[course.CourseId] = db.GetCourseProgress(userId, course.CourseId);
+                videoProgressList[course.CourseId] = db.GetCourseVideoProgress(userId, course.CourseId);
             }
             ViewBag.ProgressList = progressList;
             ViewBag.VideoProgressList = videoProgressList;
@@ -119,21 +117,34 @@ namespace LMS.Areas.Employee.Controllers
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
-            // Get the selected video
             Video video = db.GetVideoById(id);
+
             if (video == null)
             {
                 return Content("Video not found.");
             }
-            // Check whether employee has access to this course
-            EmployeeCourse course =
-                db.GetEmployeeCourseAccess(userId, video.CourseId);
+
+            EmployeeCourse course = db.GetEmployeeCourseAccess(userId, video.CourseId);
+
             if (course == null)
             {
                 return Content("You do not have access to this video.");
             }
+
+            List<Video> videos = db.GetCourseVideos(video.CourseId);
+
+            for (int i = 0; i < videos.Count; i++)
+            {
+                if (videos[i].VideoId == video.VideoId && i + 1 < videos.Count)
+                {
+                    video.NextVideoId = videos[i + 1].VideoId;
+                    break;
+                }
+            }
+
             return View(video);
         }
+
         [HttpGet]
         public ActionResult StartLearning(int id)
         {
@@ -176,7 +187,7 @@ namespace LMS.Areas.Employee.Controllers
                 return Content("You have not passed the quiz.");
             }
             db.CreateCertificate(userId, courseId, quizResultId);
-            return RedirectToAction("Certificate","Employee",new{area = "Employee",courseId = courseId});
+            return RedirectToAction("Certificate", "Employee", new { area = "Employee", courseId = courseId });
         }
         [HttpPost]
         public ActionResult Quiz(int courseId, FormCollection form)

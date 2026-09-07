@@ -1,64 +1,68 @@
 ﻿@model LMS.Areas.Admin.Models.RegisterUser
 <link href="~/Content/style.css" rel="stylesheet" />
- @{ Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; }
+@{ Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; }
 @*<div class="form-page-container">*@
 <h2> Registration Form </h2>
 
 @using (Html.BeginForm("RegisterUser", "Admin", FormMethod.Post, new { id = "registerForm" }))
 {
     <div class="form-group">
-        <label><span>*</span> First Name</label>
+        <label class="required-label">First Name</label>
         @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "validation-message" })
     </div>
 
     <div class="form-group">
-        <label><span>*</span> Last Name</label>
+        <label class="required-label">Last Name</label>
         @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "validation-message" })
     </div>
 
     <div class="form-group">
-        <label><span>*</span> Email</label>
+        <label class="required-label">Email</label>
         @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-message" })
     </div>
 
     <div class="form-group">
-        <label><span>*</span> Password</label>
+        <label class="required-label">Password</label>
         @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validation-message" })
     </div>
+
     <div class="form-group">
-        <label><span>*</span> Confirm Password</label>
+        <label class="required-label">Confirm Password</label>
         @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "validation-message" })
     </div>
+
     <div class="form-group">
-        <label><span>*</span> Role</label>
-        @Html.DropDownListFor(m => m.Role, new List<SelectListItem>
-            {
-                new SelectListItem { Text = "Admin", Value = "1" },
-                new SelectListItem { Text = "Employee", Value = "2" }
-            }, "-- Select Role --", new { @class = "form-control", id = "Role" })
-        @Html.ValidationMessageFor(m => m.Role, "", new { @class = "validation-message" })
+        <label class="required-label">Role</label>
+        @Html.DropDownListFor(
+            m => m.Role,
+            (IEnumerable<SelectListItem>)ViewBag.Roles,
+            "-- Select Role --",
+            new { @class = "form-control", id = "Role" })
+
+        @Html.ValidationMessageFor(
+            m => m.Role,
+            "",
+            new { @class = "validation-message" })
     </div>
 
     <div id="courseDiv" class="form-group" style="display:none;">
-        <label><span>*</span> Course</label>
+        <label class="required-label">Course</label>
 
         @Html.DropDownListFor(
             m => m.CourseId,
             (IEnumerable<SelectListItem>)ViewBag.Courses,
             "-- Select Course --",
-            new { @class = "form-control", id = "Course" }
-        )
+            new { @class = "form-control", id = "Course" })
 
         @Html.ValidationMessageFor(
             m => m.CourseId,
             "",
-            new { @class = "validation-message" }
-        )
+            new { @class = "validation-message" })
     </div>
 
     <div class="button-container">
@@ -87,6 +91,9 @@
     {
     <script>
         $(document).ready(function () {
+            $(".required-label").each(function () {
+                $(this).prepend('<span style="color:red;">* </span>');
+            });
 
             function showMessage(message) {
                 $("#messageText").text(message);
@@ -160,6 +167,6 @@
     </script>
 }
 @*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<script src="~/Scripts/jquery.validate.min.js"></script>
-<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
 

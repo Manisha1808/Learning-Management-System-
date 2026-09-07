@@ -8,6 +8,7 @@ namespace LMS.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly string connectionString = ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;
         public ActionResult Login()
         {
             return View();
@@ -24,12 +25,7 @@ namespace LMS.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-
             int userId = 0;
-
-            string connectionString =
-                ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;
-
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 string query = @"
@@ -49,37 +45,14 @@ namespace LMS.Controllers
                         if (reader.Read())
                         {
                             userId = Convert.ToInt32(reader["UserId"]);
-
-                            string passwordHash =
-                                reader["PasswordHash"].ToString();
-
-                            int roleId =
-                                Convert.ToInt32(reader["RoleId"]);
-
-                            bool isPasswordValid =
-                                BCrypt.Net.BCrypt.Verify(
-                                    model.Password,
-                                    passwordHash
-                                );
-
-                            System.Diagnostics.Debug.WriteLine(
-                                "USER ID = " + userId
-                            );
-
-                            System.Diagnostics.Debug.WriteLine(
-                                "ROLE ID = " + roleId
-                            );
-
-                            System.Diagnostics.Debug.WriteLine(
-                                "PASSWORD VALID = " + isPasswordValid
-                            );
-
+                            string passwordHash = reader["PasswordHash"].ToString();
+                            int roleId = Convert.ToInt32(reader["RoleId"]);
+                            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, passwordHash);
                             if (isPasswordValid)
                             {
                                 Session["UserId"] = userId;
                                 Session["UserRole"] = roleId;
                                 Session["UserEmail"] = model.Email;
-
                                 if (roleId == 1)
                                 {
                                     return RedirectToAction(

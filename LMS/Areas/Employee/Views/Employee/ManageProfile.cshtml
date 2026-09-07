@@ -36,22 +36,19 @@
 
     <br />
     <div>
-        <label>Phone Number</label>
         <input type="text"
                id="txtPhoneNumber"
                class="form-control"
                value="@Model.PhoneNumber" />
+
+        <span id="phoneError" style="color:red;"></span>
     </div>
 
     <br />
 
     <div>
         <label>Created By</label>
-        <input type="text"
-               id="txtCreatedBy"
-               class="form-control"
-               value="@Model.CreatedBy"
-               readonly />
+        <label>@Model.CreatedBy</label>
     </div>
 
     <br />
@@ -86,6 +83,12 @@
             }
 
             $("#btnSaveProfile").click(function () {
+                var phone = $("#txtPhoneNumber").val().trim();
+
+                if (phone !== "" && !/^[6-9][0-9]{9}$/.test(phone)) {
+                    $("#phoneError").text("Enter a valid 10-digit phone number.");
+                    return;
+                }
 
                 $.ajax({
                     url: "@Url.Action("ManageProfile", "Employee", new { area = "Employee" })",

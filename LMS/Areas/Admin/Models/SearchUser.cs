@@ -1,5 +1,4 @@
 ﻿using System;
-
 namespace LMS.Areas.Admin.Models
 {
     public class SearchUser

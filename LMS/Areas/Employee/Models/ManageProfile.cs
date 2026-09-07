@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
+﻿using System.ComponentModel.DataAnnotations;
 namespace LMS.Areas.Employee.Models
 {
     public class ManageProfile
@@ -11,6 +7,7 @@ namespace LMS.Areas.Employee.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        [RegularExpression(@"^[6-9][0-9]{9}$",ErrorMessage = "Enter a valid 10-digit phone number.")]
         public string PhoneNumber { get; set; }
         public string CreatedBy { get; set; }
     }
