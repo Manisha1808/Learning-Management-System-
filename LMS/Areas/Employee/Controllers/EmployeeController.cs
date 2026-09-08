@@ -24,36 +24,51 @@ namespace LMS.Areas.Employee.Controllers
             return View(courses);
         }
         [HttpGet]
+        public ActionResult StartLearning(int id)
+        {
+            int userId = Convert.ToInt32(Session["UserId"]);
+            EmployeeDB db = new EmployeeDB();
+            db.StartCourse(userId, id);
+            return RedirectToAction("Course", "Employee", new
+            {
+                area = "Employee",
+                id = id
+            });
+        }
+        //  This action method fetch the current user learning record 
+        [HttpGet]
         public ActionResult MyLearning()
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
             List<EmployeeCourse> courses = db.GetMyLearning(userId);
-            Dictionary<int, CourseProgress> progressList = new Dictionary<int, CourseProgress>();
-            Dictionary<int, List<VideoProgress>> videoProgressList = new Dictionary<int, List<VideoProgress>>();
+            Dictionary<int, CourseProgress> progressList = new Dictionary<int, CourseProgress>(); // Stores all courses assigned to the logged-in employee
+            Dictionary<int, List<VideoProgress>> videoProgressList = new Dictionary<int, List<VideoProgress>>(); // Stores overall progress for each course using CourseId as the key
             foreach (var course in courses)
             {
                 progressList[course.CourseId] = db.GetCourseProgress(userId, course.CourseId);
                 videoProgressList[course.CourseId] = db.GetCourseVideoProgress(userId, course.CourseId);
             }
-            ViewBag.ProgressList = progressList;
+            ViewBag.ProgressList = progressList;     
             ViewBag.VideoProgressList = videoProgressList;
             return View(courses);
         }
+        //the Course action handles course access and deadline validation
         [HttpGet]
         public ActionResult Course(int id)
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
-            EmployeeCourse course = db.GetEmployeeCourseAccess(userId, id);
+            EmployeeCourse course = db.GetEmployeeCourseAccess(userId, id); //Check the userid along with course id to verify access permitted
             if (course == null)
                 return Content("You do not have access to this course.");
             if (course.EndDate.HasValue && course.EndDate.Value < DateTime.Now)
             {
-                return Content("Course deadline has been crossed. Please contact admin.");
+                return Content("Course deadline has been crossed. Please contact admin."); // To check if access is expired 
             }
             return View(course);
         }
+        // CourseContent is responsible for fetching and displaying the actual videos and learning progress
         [HttpGet]
         public ActionResult CourseContent(int id)
         {
@@ -70,69 +85,47 @@ namespace LMS.Areas.Employee.Controllers
             ViewBag.CourseProgress = courseProgress;
             return View(course);
         }
+
         [HttpGet]
         public ActionResult ContinueLearning(int id)
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
             EmployeeCourse course = db.GetEmployeeCourseAccess(userId, id);
-            if (course.EndDate.HasValue && course.EndDate.Value < DateTime.Now)
+            if (course.EndDate.HasValue && course.EndDate.Value < DateTime.Now) //If end date exceeds currentdate, it will show deadline message
             {
-                TempData["DeadlineMessage"] =
-                    "Course deadline has been crossed. Please contact admin.";
+                TempData["DeadlineMessage"] = "Course deadline has been crossed. Please contact admin.";
                 return RedirectToAction("Dashboard", "Employee", new { area = "Employee" });
             }
             List<VideoProgress> progress = db.GetCourseVideoProgress(userId, id);
-            VideoProgress nextVideo = progress.Find(v => !v.IsCompleted);
+            VideoProgress nextVideo = progress.Find(v => !v.IsCompleted); //If the next video is not null, it will automatically switch to next once completed
             if (nextVideo != null)
             {
-                return RedirectToAction(
-                    "WatchVideo",
-                    "Employee",
-                    new
+                return RedirectToAction("WatchVideo","Employee",new
                     {
                         area = "Employee",
                         id = nextVideo.VideoId
                     });
             }
-            return RedirectToAction(
-                "CourseContent",
-                "Employee",
-                new
+            return RedirectToAction("CourseContent","Employee",new
                 {
                     area = "Employee",
                     id = id
                 });
         }
-        [HttpGet]
-        public ActionResult ManageProfile()
-        {
-            int userId = Convert.ToInt32(Session["UserId"]);
-            EmployeeDB db = new EmployeeDB();
-            ManageProfile model = db.GetManageProfile(userId);
-            return View(model);
-        }
+        //checking the video id if it's null then based on that video access is given 
         [HttpGet]
         public ActionResult WatchVideo(int id)
         {
-            int userId = Convert.ToInt32(Session["UserId"]);
+            int userId = Convert.ToInt32(Session["UserId"]);   
             EmployeeDB db = new EmployeeDB();
             Video video = db.GetVideoById(id);
-
-            if (video == null)
-            {
-                return Content("Video not found.");
-            }
-
+            if (video == null) 
+            { return Content("Video not found."); }
             EmployeeCourse course = db.GetEmployeeCourseAccess(userId, video.CourseId);
-
             if (course == null)
-            {
-                return Content("You do not have access to this video.");
-            }
-
+            { return Content("You do not have access to this video."); }
             List<Video> videos = db.GetCourseVideos(video.CourseId);
-
             for (int i = 0; i < videos.Count; i++)
             {
                 if (videos[i].VideoId == video.VideoId && i + 1 < videos.Count)
@@ -141,23 +134,22 @@ namespace LMS.Areas.Employee.Controllers
                     break;
                 }
             }
-
             return View(video);
         }
-
-        [HttpGet]
-        public ActionResult StartLearning(int id)
+        // Just to mark the videos as completed, later we use this to assign quiz
+        [HttpPost]
+        public JsonResult MarkVideoCompleted(int videoId)
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
-            db.StartCourse(userId, id);
-            return RedirectToAction("Course", "Employee",
-                new
-                {
-                    area = "Employee",
-                    id = id
-                });
+            db.MarkVideoCompleted(userId, videoId);
+            return Json(new
+            {
+                success = true,
+                message = "Video completed."
+            });
         }
+        // First check if course is completed, then quiz option appears
         [HttpGet]
         public ActionResult Quiz(int id)
         {
@@ -173,22 +165,11 @@ namespace LMS.Areas.Employee.Controllers
             {
                 return Content("Please complete all course videos before attempting the quiz.");
             }
-            List<QuizQuestion> questions = db.GetQuizQuestions(id);
+            List<QuizQuestion> questions = db.GetQuizQuestions(id);  //stored all the questions 
             return View(questions);
         }
-        [HttpGet]
-        public ActionResult GetCertificate(int courseId)
-        {
-            int userId = Convert.ToInt32(Session["UserId"]);
-            EmployeeDB db = new EmployeeDB();
-            int quizResultId = db.GetLatestPassedQuizResult(userId, courseId);
-            if (quizResultId == 0)
-            {
-                return Content("You have not passed the quiz.");
-            }
-            db.CreateCertificate(userId, courseId, quizResultId);
-            return RedirectToAction("Certificate", "Employee", new { area = "Employee", courseId = courseId });
-        }
+        
+        //User submits the answers, it checks from the db whether answers are correct or not
         [HttpPost]
         public ActionResult Quiz(int courseId, FormCollection form)
         {
@@ -219,32 +200,44 @@ namespace LMS.Areas.Employee.Controllers
             ViewBag.CourseId = courseId;
             return View("QuizResult");
         }
-        [HttpPost]
-        public JsonResult MarkVideoCompleted(int videoId)
+        // to check whether passed the quiz or not, based on that certificate will be generated 
+        [HttpGet]
+        public ActionResult GetCertificate(int courseId)
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
-            db.MarkVideoCompleted(userId, videoId);
-            return Json(new
+            int quizResultId = db.GetLatestPassedQuizResult(userId, courseId);
+            if (quizResultId == 0)
             {
-                success = true,
-                message = "Video completed."
-            });
+                return Content("You have not passed the quiz.");
+            }
+            db.CreateCertificate(userId, courseId, quizResultId);
+            return RedirectToAction("Certificate", "Employee", new { area = "Employee", courseId = courseId });
         }
+        // To fetch the certificate details and display it
         [HttpGet]
         public ActionResult Certificate(int courseId)
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
             // Get certificate details
-            Certificate certificate =
-                db.GetCertificate(userId, courseId);
+            Certificate certificate = db.GetCertificate(userId, courseId);
             if (certificate == null)
             {
                 return Content("Certificate not found.");
             }
             return View(certificate);
         }
+        // Just to get Employee Profile details 
+        [HttpGet]
+        public ActionResult ManageProfile()
+        {
+            int userId = Convert.ToInt32(Session["UserId"]);
+            EmployeeDB db = new EmployeeDB();
+            ManageProfile model = db.GetManageProfile(userId);
+            return View(model);
+        }
+        //the updated is sent to db
         [HttpPost]
         public JsonResult ManageProfile(ManageProfile model)
         {
@@ -265,3 +258,5 @@ namespace LMS.Areas.Employee.Controllers
 //Mani@1234
 //roma801@gmail.com
 //Roma@1234
+//aditya@gmail.com
+//Adi@1234
