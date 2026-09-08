@@ -23,7 +23,6 @@ namespace LMS.Areas.Admin.Controllers
         {
             AdminDB db = new AdminDB();
             DataTable dt = db.GetUserRoleCounts();
-
             if (dt.Rows.Count > 0)
             {
                 ViewBag.AdminCount = dt.Rows[0]["AdminCount"];
