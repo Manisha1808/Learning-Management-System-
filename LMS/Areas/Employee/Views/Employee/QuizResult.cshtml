@@ -28,27 +28,20 @@
         <h3 style="color:green;">
             ✓ Quiz Passed
         </h3>
-
         <p>Congratulations! You have passed the quiz.</p>
-
         <a href="@Url.Action("GetCertificate", "Employee",
         new { area = "Employee", courseId = ViewBag.CourseId })"
-           class="btn btn-success">
-            Get Certificate
-        </a>
+           class="btn btn-success">   Get Certificate   </a>
     }
     else
     {
         <h3 style="color:red;">
             ✗ Quiz Failed
         </h3>
-
         <p>You need at least 60% to pass the quiz.</p>
-
         <button type="button" class="btn btn-primary"
                 onclick="history.back()">
             Try Again
         </button>
     }
-
 </div>
