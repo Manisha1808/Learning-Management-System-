@@ -189,9 +189,7 @@ namespace LMS.DB
                             VideoTitle = reader["VideoTitle"].ToString(),
                             SequenceNo = Convert.ToInt32(reader["SequenceNo"]),
                             IsCompleted = Convert.ToBoolean(reader["IsCompleted"]),
-                            CompletedDate = reader["CompletedDate"] == DBNull.Value
-                                ? (DateTime?)null
-                                : Convert.ToDateTime(reader["CompletedDate"])
+                            CompletedDate = reader["CompletedDate"] == DBNull.Value? (DateTime?)null: Convert.ToDateTime(reader["CompletedDate"])
                         });
                     }
                 }
@@ -256,10 +254,8 @@ namespace LMS.DB
             using (SqlCommand cmd = new SqlCommand("sp_StartCourse", con))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@UserId", userId);
                 cmd.Parameters.AddWithValue("@CourseId", courseId);
-
                 con.Open();
                 cmd.ExecuteNonQuery();
             }

@@ -155,8 +155,6 @@
     <Compile Include="Areas\Employee\Models\VideoProgress.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Content Include="Content\Videos\AccuKnox.mp4" />
-    <Content Include="Content\Videos\MVCArchitecture.mp4" />
     <Content Include="Demo.txt" />
     <Compile Include="DB\AdminDB.cs" />
     <Compile Include="DB\EmployeeDB.cs" />
@@ -263,6 +261,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Employee\Data\" />
+    <Folder Include="Content\Videos\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -1,20 +1,15 @@
 ﻿@model List<LMS.Areas.Employee.Models.EmployeeCourse>
 
 <div class="course-container">
-
     @foreach (var course in Model)
     {
         bool isAvailable = course.EnrollmentDate <= DateTime.Now;
-
     <div class="course-card">
-
         <h3>@course.CourseName</h3>
-
         <p>
             Enrollment Date:
             @course.EnrollmentDate.ToString("dd-MM-yyyy")
         </p>
-
         <p>
             Status:
             @if (course.Status == "Expired")
@@ -62,8 +57,6 @@
                 @course.EnrollmentDate.ToString("dd-MM-yyyy")
             </button>
         }
-
     </div>
     }
-
 </div>

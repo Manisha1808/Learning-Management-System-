@@ -303,7 +303,7 @@ namespace LMS.DB
                 cmd.Parameters.AddWithValue("@StartDate", DBNull.Value);
                 cmd.Parameters.AddWithValue("@EndDate", DBNull.Value);
                 cmd.Parameters.AddWithValue("@CourseIsActive", true);
-                cmd.Parameters.AddWithValue("@PhoneNumber", (object)phoneNumber ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@PhoneNumber",phoneNumber == null ? DBNull.Value : (object)phoneNumber);
                 con.Open();
                 cmd.ExecuteNonQuery();
             }

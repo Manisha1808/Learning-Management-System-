@@ -112,17 +112,12 @@
     </p>
     <p>
         <strong>Start Date:</strong>
-        @(course.StartDate.HasValue
-        ? course.StartDate.Value.ToString("dd-MM-yyyy")
-        : "Not Started")
+        @(course.StartDate.HasValue? course.StartDate.Value.ToString("dd-MM-yyyy"): "Not Started")
     </p>
 
     <p>
         <strong>Deadline:</strong>
-        @(course.EndDate.HasValue
-        ? course.EndDate.Value.ToString("dd-MM-yyyy")
-        : "Not Started")
-    </p>
+        @(course.EndDate.HasValue? course.EndDate.Value.ToString("dd-MM-yyyy"): "Not Started")  </p>
 
 
     <div class="progress-info">

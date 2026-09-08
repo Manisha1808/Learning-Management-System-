@@ -18,13 +18,12 @@
         int percentage =
             (courseProgress.CompletedVideos * 100)
             / courseProgress.TotalVideos;
-
-        <p>
-            Progress:
-            @courseProgress.CompletedVideos /
-            @courseProgress.TotalVideos videos completed
-        </p>
-
+      
+    <p>
+        Progress:
+        @courseProgress.CompletedVideos /              @*Formula to calculate the Course Progress*@
+        @courseProgress.TotalVideos videos completed
+    </p>
         <div class="progress" style="width:500px;">
             <div class="progress-bar"
                  role="progressbar"
@@ -42,13 +41,9 @@
     {
         var videoProgress = progress?
             .FirstOrDefault(p => p.VideoId == video.VideoId);
-
         <div style="margin-bottom:20px;">
-
             <h4>@video.SequenceNo. @video.VideoTitle</h4>
-
             <p>@video.Description</p>
-
             @if (videoProgress != null && videoProgress.IsCompleted)
             {
                 <span style="color:green;">
@@ -58,7 +53,6 @@
                 <br />
                 <br />
             }
-
             <a href="@Url.Action("WatchVideo", "Employee",
                     new { area = "Employee", id = video.VideoId })"
                class="btn btn-primary">
