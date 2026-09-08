@@ -223,52 +223,22 @@ namespace LMS.DB
                 cmd.ExecuteNonQuery();
             }
         }
-        public ManageProfile GetManageProfile(int userId)
+        public DataTable GetUserRoleCounts()
         {
-            ManageProfile model = null;
+            DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand("sp_GetUserById", con))
+            using (SqlCommand cmd = new SqlCommand("sp_GetUserRoleCounts", con))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@UserId", userId);
-                con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
+
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                 {
-                    if (reader.Read())
-                    {
-                        model = new ManageProfile
-                        {
-                            UserId = Convert.ToInt32(reader["UserId"]),
-                            FirstName = reader["FirstName"].ToString(),
-                            LastName = reader["LastName"].ToString(),
-                            Email = reader["Email"].ToString(),
-                            PhoneNumber = reader["PhoneNumber"] == DBNull.Value ? "" : reader["PhoneNumber"].ToString(),
-                            CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString(),
-                            CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
-                        };
-                    }
+                    da.Fill(dt);
                 }
             }
-            return model;
-        }
-        public void UpdateProfile(int userId, string firstName, string lastName, string email, string phoneNumber)
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand("sp_UpdateUser", con))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@UserId", userId);
-                cmd.Parameters.AddWithValue("@FirstName", firstName);
-                cmd.Parameters.AddWithValue("@LastName", lastName);
-                cmd.Parameters.AddWithValue("@Email", email);
-                cmd.Parameters.AddWithValue("@RoleId", 1);
-                cmd.Parameters.AddWithValue("@StartDate", DBNull.Value);
-                cmd.Parameters.AddWithValue("@EndDate", DBNull.Value);
-                cmd.Parameters.AddWithValue("@CourseIsActive", true);
-                cmd.Parameters.AddWithValue("@PhoneNumber",phoneNumber == null ? DBNull.Value : (object)phoneNumber);
-                con.Open();
-                cmd.ExecuteNonQuery();
-            }
+
+            return dt;
         }
     }
 }

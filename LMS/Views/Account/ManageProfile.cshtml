@@ -1,7 +1,29 @@
-﻿@{ ViewBag.Title = "Manage Profile";
-    Layout = "~/Areas/Employee/Views/Shared/_Layout.cshtml";
-}
+﻿@model LMS.Models.ManageProfile
+@{
+    ViewBag.Title = "ManageProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+ }
+<style>
+    #messageDialog {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        padding: 20px;
+        background-color: white;
+        border: 1px solid #ccc;
+        text-align: center;
+    }
 
+    #messageText {
+        margin-bottom: 20px;
+    }
+
+    #btnOk {
+        padding: 6px 10px;
+    }
+</style>
 <h2>Manage Profile</h2>
 
 <div style="width:400px;">
@@ -13,9 +35,7 @@
                class="form-control"
                value="@Model.FirstName" />
     </div>
-
     <br />
-
     <div>
         <label>Last Name</label>
         <input type="text"
@@ -33,7 +53,7 @@
     </div>
     <br />
     <div>
-        <label>Phone Number</label>
+        <label>Phone Number </label>
         <input type="text"
                id="txtPhoneNumber"
                class="form-control"
@@ -43,79 +63,71 @@
     </div>
     <br />
     <div>
-        <label>Created By
-        @Model.CreatedBy</label>
+        <label>
+            Created By
+            @Model.CreatedBy
+        </label>
+
     </div>
+
     <div>
-        <label>Created Date
-        @Model.CreatedDate</label>
+        <label>
+            Created Date
+            @Model.CreatedDate
+        </label>
+
     </div>
-    <br />
+    </br>
     <button type="button"
             id="btnSaveProfile"
             class="btn btn-success">
         Save
     </button>
+
 </div>
-<div id="messageDialog" title="LMS" style="display:none;">
+
+<div id="messageDialog" style="display:none;">
     <p id="messageText"></p>
+    <button type="button" id="btnOk">OK</button>
 </div>
+
 @section scripts
 {
     <script>
         $(document).ready(function () {
-
-            $("#messageDialog").dialog({
-                autoOpen: false,
-                modal: true,
-                buttons: {
-                    OK: function () {
-                        $(this).dialog("close");
-                    }
-                }
-            });
-
             function showMessage(message) {
                 $("#messageText").text(message);
-                $("#messageDialog").dialog("open");
+                $("#messageDialog").show();
             }
 
+            $("#btnOk").click(function () {
+                $("#messageDialog").hide();
+            });
             $("#btnSaveProfile").click(function () {
                 var phone = $("#txtPhoneNumber").val().trim();
-
                 if (phone !== "" && !/^[6-9][0-9]{9}$/.test(phone)) {
                     $("#phoneError").text("Enter a valid 10-digit phone number.");
                     return;
                 }
-
                 $.ajax({
-                    url: "@Url.Action("ManageProfile", "Employee", new { area = "Employee" })",
+                      url: '@Url.Action("ManageProfile", "Account", new { area = "" })',
                     type: "POST",
-
                     data: {
                         FirstName: $("#txtFirstName").val(),
                         LastName: $("#txtLastName").val(),
                         Email: $("#txtEmail").val(),
                         PhoneNumber: $("#txtPhoneNumber").val()
                     },
-
                     success: function (response) {
-
-                        if (response.success) {
-                            showMessage(response.message);
-                        }
-                        else {
-                            showMessage("Profile update failed.");
-                        }
+                        if (response.success) {showMessage(response.message); }
+                        else { showMessage("Profile update failed."); }
                     },
-
-                    error: function () {
-                        showMessage("Error while updating profile.");
-                    }
+                    error: function () {showMessage("Error while updating profile."); }
                 });
 
             });
 
         });
+
     </script>
 }
