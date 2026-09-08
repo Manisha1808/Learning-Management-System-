@@ -14,62 +14,36 @@
         min-height:500px;
         background-color:#fff;
     ">
-
-        <h1 style="margin-bottom:10px;">
-            CERTIFICATE OF COMPLETION
-        </h1>
-
+        <h1 style="margin-bottom:10px;">   CERTIFICATE OF COMPLETION </h1>
         <hr />
-
         <p style="font-size:18px; margin-top:40px;">
             This certificate is proudly presented to
         </p>
-
         <h2 style="font-size:32px; margin:20px 0;">
             @Model.EmployeeName
         </h2>
-
         <p style="font-size:18px;">
             for successfully completing the course
         </p>
-
         <h2 style="font-size:28px; margin:20px 0;">
             @Model.CourseName
         </h2>
-
         <p style="font-size:18px;">
             Quiz Score:
             <strong>
                 @Model.Score / @Model.TotalQuestions
             </strong>
         </p>
-
         <p style="font-size:18px;">
-            Percentage:
-            <strong>
-                @Model.Percentage%
-            </strong>
+            Percentage: <strong> @Model.Percentage%</strong>
         </p>
-
         <br />
 
-        <p>
-            Certificate No:
-            <strong>@Model.CertificateNumber</strong>
-        </p>
-
-        <p>
-            Issue Date:
-            <strong>
-                @Model.IssueDate.ToString("dd-MM-yyyy")
-            </strong>
-        </p>
-
+        <p> Certificate No: <strong>@Model.CertificateNumber</strong>  </p>
+        <p> Issue Date: <strong>  @Model.IssueDate.ToString("dd-MM-yyyy") </strong>  </p>
         <br />
 
-        <h4 style="color:green;">
-            ✓ Course Completed
-        </h4>
+        <h4 style="color:green;">  ✓ Course Completed  </h4>
 
     </div>
 

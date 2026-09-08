@@ -2,16 +2,75 @@
     ViewBag.Title = "Admin Dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
+<style>
+    .manage-profile-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        padding: 7px 14px;
+        font-size: 13px;
+        background-color: #5b9bd5;
+        color: white;
+        text-decoration: none;
+        border: 1px solid #333;
+        border-radius: 3px;
+    }
 
+        .manage-profile-btn:hover {
+            background-color: #4a8bc2;
+            color: white;
+            text-decoration: none;
+        }
+    .dashboard-cards {
+        display: flex;
+        gap: 25px;
+        margin-top: 50px;
+        justify-content: center;
+    }
+
+    .count-card {
+        width: 220px;
+        padding: 25px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f8f8f8;
+    }
+
+        .count-card h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .count-card h2 {
+            font-size: 32px;
+            margin: 0;
+        }
+     </style>
 <div class="dashboard-header">
 
     <h2>ADMIN DASHBOARD</h2>
+    <div class="dashboard-cards">
 
-    <a href="@Url.Action("ManageProfile", "Admin", new { area = "Admin" })"
-       class="manage-profile-btn">
-        Manage<br />
+        <div class="count-card">
+            <h4>Admin</h4>
+            <h2>@ViewBag.AdminCount</h2>
+        </div>
+
+        <div class="count-card">
+            <h4>Employee</h4>
+            <h2>@ViewBag.EmployeeCount</h2>
+        </div>
+
+        <div class="count-card">
+            <h4>Trainer</h4>
+            <h2>@ViewBag.TrainerCount</h2>
+        </div>
+
+    </div>
+    <a href="@Url.Content("~/Account/ManageProfile")" class="manage-profile-btn">
+        Manage Profile
     </a>
-
 </div>
 
 

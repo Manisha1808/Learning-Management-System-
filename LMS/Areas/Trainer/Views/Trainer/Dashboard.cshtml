@@ -1,0 +1,158 @@
+﻿@model LMS.Areas.Trainer.Models.EmployeeProgress
+
+@{
+    ViewBag.Title = "Trainer Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<center>
+    <h3>Trainer Dashboard</h3>
+</center>
+
+<br />
+
+<div>
+
+    <input type="text"
+           id="txtSearchEmployee"
+           placeholder="Search Name or Email"
+           class="form-control"
+           style="width:250px; display:inline-block;" />
+
+    <select id="ddlStatus"
+            class="form-control"
+            style="width:180px; display:inline-block;">
+
+        <option value="">All Status</option>
+        <option value="Not Started">Not Started</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+
+    </select>
+
+    <input type="date"
+           id="txtEnrollmentFrom"
+           class="form-control"
+           style="width:180px; display:inline-block;" />
+
+    <input type="date"
+           id="txtEnrollmentTo"
+           class="form-control"
+           style="width:180px; display:inline-block;" />
+
+    <button type="button"
+            id="btnSearchEmployee"
+            class="btn btn-primary">
+        Search
+    </button>
+
+    <button type="button"
+            id="btnClearEmployee"
+            class="btn btn-default">
+        Clear
+    </button>
+
+</div>
+
+<br />
+
+<table class="table table-bordered table-striped">
+
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Course Name</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody id="employeeTableBody">
+    </tbody>
+
+</table>
+
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            loadEmployees();
+
+
+            // SEARCH
+
+            $("#btnSearchEmployee").click(function () {
+
+                loadEmployees();
+
+            });
+
+
+            // CLEAR
+
+            $("#btnClearEmployee").click(function () {
+
+                $("#txtSearchEmployee").val("");
+                $("#ddlStatus").val("");
+                $("#txtEnrollmentFrom").val("");
+                $("#txtEnrollmentTo").val("");
+
+                loadEmployees();
+
+            });
+
+
+            function loadEmployees() {
+
+                $.ajax({
+
+                    url: "/Trainer/Trainer/GetEmployeeList",
+
+                    type: "GET",
+
+                    data: {
+
+                        SearchText: $("#txtSearchEmployee").val(),
+
+                        StatusFilter: $("#ddlStatus").val(),
+
+                        EnrollmentFrom: $("#txtEnrollmentFrom").val(),
+
+                        EnrollmentTo: $("#txtEnrollmentTo").val()
+
+                    },
+
+                    success: function (response) {
+
+                        $("#employeeTableBody").empty();
+
+                        $.each(response.rows, function (index, employee) {
+
+                            var row = "<tr>" +
+                                "<td>" + employee.UserName + "</td>" +
+                                "<td>" + employee.CourseName + "</td>" +
+                                "<td>" + employee.Status + "</td>" +
+                                "</tr>";
+
+                            $("#employeeTableBody").append(row);
+
+                        });
+
+                    },
+
+                    error: function () {
+
+                        alert("Unable to load employee data.");
+
+                    }
+
+                });
+
+            }
+
+        });
+
+    </script>
+}

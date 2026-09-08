@@ -1,14 +1,20 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-namespace LMS.Areas.Employee.Models
+
+namespace LMS.Models
 {
     public class ManageProfile
-    {
-        public int UserId { get; set; }
+    {   public int UserId { get; set; }
+        [Required(ErrorMessage = "First Name is required")]
         public string FirstName { get; set; }
+
+        [Required(ErrorMessage = "Last Name is required")]
         public string LastName { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Enter a valid email")]
         public string Email { get; set; }
-        [RegularExpression(@"^[6-9][0-9]{9}$",ErrorMessage = "Enter a valid 10-digit phone number.")]
+
         public string PhoneNumber { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }

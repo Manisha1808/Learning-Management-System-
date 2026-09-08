@@ -299,22 +299,6 @@ namespace LMS.DB
                 }
             }
         }
-        public void CreateCertificate(int userId, int courseId, int quizResultId)
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("sp_CreateCertificate", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-                    cmd.Parameters.AddWithValue("@CourseId", courseId);
-                    cmd.Parameters.AddWithValue("@QuizResultId", quizResultId);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
         public int GetLatestPassedQuizResult(int userId, int courseId)
         {
             int quizResultId = 0;
@@ -340,6 +324,22 @@ namespace LMS.DB
             }
             return quizResultId;
         }
+        public void CreateCertificate(int userId, int courseId, int quizResultId)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_CreateCertificate", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    cmd.Parameters.AddWithValue("@CourseId", courseId);
+                    cmd.Parameters.AddWithValue("@QuizResultId", quizResultId);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public Certificate GetCertificate(int userId, int courseId)
         {
             Certificate certificate = null;
@@ -373,54 +373,6 @@ namespace LMS.DB
                 }
             }
             return certificate;
-        }
-        public ManageProfile GetManageProfile(int userId)
-        {
-            ManageProfile model = null;
-            using (SqlConnection con = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand("sp_GetUserById", con))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@UserId", userId);
-                con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        model = new ManageProfile
-                        {
-                            UserId = Convert.ToInt32(reader["UserId"]),
-                            FirstName = reader["FirstName"].ToString(),
-                            LastName = reader["LastName"].ToString(),
-                            Email = reader["Email"].ToString(),
-                            PhoneNumber = reader["PhoneNumber"] == DBNull.Value ? "" : reader["PhoneNumber"].ToString(),
-                            CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString(),
-                            CreatedDate = Convert.ToDateTime(reader["CreatedDate"])
-                        };
-                    }
-                }
-            }
-            return model;
-        }
-
-        public void UpdateProfile(int userId, string firstName, string lastName, string email, string phoneNumber)
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand("sp_UpdateUser", con))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@UserId", userId);
-                cmd.Parameters.AddWithValue("@FirstName", firstName);
-                cmd.Parameters.AddWithValue("@LastName", lastName);
-                cmd.Parameters.AddWithValue("@Email", email);
-                cmd.Parameters.AddWithValue("@RoleId", 2);
-                cmd.Parameters.AddWithValue("@StartDate", DBNull.Value);
-                cmd.Parameters.AddWithValue("@EndDate", DBNull.Value);
-                cmd.Parameters.AddWithValue("@CourseIsActive", true);
-                cmd.Parameters.AddWithValue("@PhoneNumber", (object)phoneNumber ?? DBNull.Value);
-                con.Open();
-                cmd.ExecuteNonQuery();
-            }
         }
     }
 }   

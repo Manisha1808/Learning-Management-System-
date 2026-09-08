@@ -140,7 +140,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
-    <Compile Include="Areas\Admin\Models\ManageProfile.cs" />
     <Compile Include="Areas\Admin\Models\RegisterUser.cs" />
     <Compile Include="Areas\Admin\Models\SearchUser.cs" />
     <Compile Include="Areas\Admin\Models\UserList.cs" />
@@ -149,19 +148,24 @@
     <Compile Include="Areas\Employee\Models\Certificate.cs" />
     <Compile Include="Areas\Employee\Models\CourseProgress.cs" />
     <Compile Include="Areas\Employee\Models\EmployeeCourse.cs" />
-    <Compile Include="Areas\Employee\Models\ManageProfile.cs" />
     <Compile Include="Areas\Employee\Models\QuizQuestion.cs" />
     <Compile Include="Areas\Employee\Models\Video.cs" />
     <Compile Include="Areas\Employee\Models\VideoProgress.cs" />
+    <Compile Include="Areas\Trainer\Controllers\TrainerController.cs" />
+    <Compile Include="Areas\Trainer\Models\EmployeeProgress.cs" />
+    <Compile Include="Areas\Trainer\TrainerAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Content Include="Demo.txt" />
     <Compile Include="DB\AdminDB.cs" />
+    <Compile Include="DB\CommonDB.cs" />
     <Compile Include="DB\EmployeeDB.cs" />
+    <Compile Include="DB\TrainerDB.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Login.cs" />
+    <Compile Include="Models\ManageProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -214,12 +218,10 @@
     <Content Include="Areas\Admin\Views\Admin\UserList.cshtml" />
     <Content Include="Content\ui.jqgrid.min.css.map" />
     <Content Include="Areas\Admin\Views\Shared\_AdminSidebar.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\Manageprofile.cshtml" />
     <Content Include="Areas\Employee\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Employee\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\Dashboard.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\MyLearning.cshtml" />
-    <Content Include="Areas\Employee\Views\Employee\ManageProfile.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\Course.cshtml" />
     <Content Include="Areas\Admin\Views\Admin\SearchUser.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\WatchVideo.cshtml" />
@@ -227,6 +229,10 @@
     <Content Include="Areas\Employee\Views\Employee\Quiz.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\QuizResult.cshtml" />
     <Content Include="Areas\Employee\Views\Employee\Certificate.cshtml" />
+    <Content Include="Areas\Trainer\Views\web.config" />
+    <Content Include="Areas\Trainer\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Trainer\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Trainer\Views\Trainer\Dashboard.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -256,11 +262,13 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\ManageProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Employee\Data\" />
+    <Folder Include="Areas\Trainer\Data\" />
     <Folder Include="Content\Videos\" />
   </ItemGroup>
   <ItemGroup>

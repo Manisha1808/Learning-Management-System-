@@ -41,3 +41,22 @@ span {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     box-sizing: border-box;
 }
+#messageDialog {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+#messageText {
+    margin-bottom: 20px;
+}
+
+#btnOk {
+    padding: 6px 18px;
+}

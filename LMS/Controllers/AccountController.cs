@@ -3,6 +3,7 @@ using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.Mvc;
+using LMS.DB;
 
 namespace LMS.Controllers
 {
@@ -69,6 +70,14 @@ namespace LMS.Controllers
                                         new { area = "Employee" }
                                     );
                                 }
+                                else if (roleId==3)
+                                {
+                                    return RedirectToAction(
+                                        "Dashboard",
+                                        "Trainer",
+                                        new { area = "Trainer" }
+                                    );
+                                }
                             }
                         }
                     }
@@ -77,6 +86,42 @@ namespace LMS.Controllers
 
             ViewBag.Error = "Invalid email or password.";
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult ManageProfile()
+        {
+            int userId = Convert.ToInt32(Session["UserId"]);
+
+            CommonDB db = new CommonDB();
+
+            ManageProfile model = db.GetManageProfile(userId);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public JsonResult ManageProfile(ManageProfile model)
+        {
+            int userId = Convert.ToInt32(Session["UserId"]);
+
+            CommonDB db = new CommonDB();
+
+            db.UpdateProfile(
+                userId,
+                model.FirstName,
+                model.LastName,
+                model.Email,
+                model.PhoneNumber
+            );
+
+            Session["UserEmail"] = model.Email;
+
+            return Json(new
+            {
+                success = true,
+                message = "Profile updated successfully."
+            });
         }
     }
 }

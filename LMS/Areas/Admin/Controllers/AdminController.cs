@@ -3,6 +3,7 @@ using LMS.Areas.Admin.Models;
 using System;
 using System.Web.Mvc;
 using System.Collections.Generic;
+using System.Data;
 
 namespace LMS.Areas.Admin.Controllers
 {
@@ -20,6 +21,15 @@ namespace LMS.Areas.Admin.Controllers
 
         public ActionResult Dashboard()
         {
+            AdminDB db = new AdminDB();
+            DataTable dt = db.GetUserRoleCounts();
+
+            if (dt.Rows.Count > 0)
+            {
+                ViewBag.AdminCount = dt.Rows[0]["AdminCount"];
+                ViewBag.EmployeeCount = dt.Rows[0]["EmployeeCount"];
+                ViewBag.TrainerCount = dt.Rows[0]["TrainerCount"];
+            }
             return View();
         }
 
@@ -149,32 +159,6 @@ namespace LMS.Areas.Admin.Controllers
             {
                 success = true,
                 message = IsActive ? "User activated successfully." : "User deactivated successfully."  //this is for the dialog box 
-            });
-        }
-        // Just to get Admin Profile details 
-        [HttpGet]
-        public ActionResult ManageProfile()
-        {
-            int userId = Convert.ToInt32(Session["UserId"]);
-            AdminDB db = new AdminDB();
-            ManageProfile model = db.GetManageProfile(userId);
-
-            return View(model);
-        }
-        //the updated is sent to db
-        [HttpPost]
-        public JsonResult ManageProfile(ManageProfile model)
-        {
-            int userId = Convert.ToInt32(Session["UserId"]);
-            AdminDB db = new AdminDB();
-
-            db.UpdateProfile(userId, model.FirstName, model.LastName, model.Email, model.PhoneNumber);
-            Session["UserEmail"] = model.Email;
-
-            return Json(new
-            {
-                success = true,
-                message = "Profile updated successfully."
             });
         }
     }

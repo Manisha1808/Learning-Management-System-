@@ -228,29 +228,6 @@ namespace LMS.Areas.Employee.Controllers
             }
             return View(certificate);
         }
-        // Just to get Employee Profile details 
-        [HttpGet]
-        public ActionResult ManageProfile()
-        {
-            int userId = Convert.ToInt32(Session["UserId"]);
-            EmployeeDB db = new EmployeeDB();
-            ManageProfile model = db.GetManageProfile(userId);
-            return View(model);
-        }
-        //the updated is sent to db
-        [HttpPost]
-        public JsonResult ManageProfile(ManageProfile model)
-        {
-            int userId = Convert.ToInt32(Session["UserId"]);
-            EmployeeDB db = new EmployeeDB();
-            db.UpdateProfile(userId, model.FirstName, model.LastName, model.Email, model.PhoneNumber);
-            Session["UserEmail"] = model.Email;
-            return Json(new
-            {
-                success = true,
-                message = "Profile updated successfully."
-            });
-        }
     }
 }
 //For Testing Purpose:
