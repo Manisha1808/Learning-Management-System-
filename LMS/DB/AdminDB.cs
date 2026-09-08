@@ -243,7 +243,8 @@ namespace LMS.DB
                             LastName = reader["LastName"].ToString(),
                             Email = reader["Email"].ToString(),
                             PhoneNumber = reader["PhoneNumber"] == DBNull.Value ? "" : reader["PhoneNumber"].ToString(),
-                            CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString()
+                            CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString(),
+                            CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
                         };
                     }
                 }
