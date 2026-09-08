@@ -8,8 +8,9 @@ using System.Web.Mvc;
 namespace LMS.DB
 {
     public class AdminDB
-    {
+    {   // On controller level the connection string is declared in a variable 
         private string connectionString = ConfigurationManager.ConnectionStrings["LMSConnection"].ConnectionString;
+        // Create User 
         public int CreateUser(RegisterUser model, string passwordHash, int createdBy)
         {
             int userId;
@@ -24,23 +25,20 @@ namespace LMS.DB
                 cmd.Parameters.AddWithValue("@RoleId", Convert.ToInt32(model.Role));
                 cmd.Parameters.AddWithValue("@IsActive", true);
                 cmd.Parameters.AddWithValue("@CreatedBy", createdBy);
-
                 con.Open();
                 userId = Convert.ToInt32(cmd.ExecuteScalar());
             }
-
             return userId;
         }
         public List<SelectListItem> GetRoles()
         {
-            List<SelectListItem> roles = new List<SelectListItem>();
-
+            List<SelectListItem> roles = new List<SelectListItem>();  //stored the number of roles
             using (SqlConnection con = new SqlConnection(connectionString))
             using (SqlCommand cmd = new SqlCommand("sp_GetRoles", con))
             {
                cmd.CommandType = CommandType.StoredProcedure;
                con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                using (SqlDataReader reader = cmd.ExecuteReader())  //Reading through the data
                 {
                     while (reader.Read())
                     {
@@ -56,8 +54,7 @@ namespace LMS.DB
         }
         public List<SelectListItem> GetCourses()
         {
-            List<SelectListItem> courses = new List<SelectListItem>();
-
+            List<SelectListItem> courses = new List<SelectListItem>();  //stored the number of courses
             using (SqlConnection con = new SqlConnection(connectionString))
             using (SqlCommand cmd = new SqlCommand("sp_GetCourses", con))
             {
@@ -77,6 +74,7 @@ namespace LMS.DB
             }
             return courses;
         }
+        // Assign the user with course Id
         public void AssignUserCourse(int userId, int courseId)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -90,24 +88,21 @@ namespace LMS.DB
                 cmd.Parameters.AddWithValue("@EndDate", DBNull.Value);
                 cmd.Parameters.AddWithValue("@Status", "Not Started");
                 cmd.Parameters.AddWithValue("@IsActive", true);
-
                 con.Open();
                 cmd.ExecuteNonQuery();
             }
         }
-
+        // The get the User List
         public List<UserList> GetUsers(int loggedInUserId)
         {
-            List<UserList> users = new List<UserList>();
+            List<UserList> users = new List<UserList>();  // Stored the list of users
 
             using (SqlConnection con = new SqlConnection(connectionString))
             using (SqlCommand cmd = new SqlCommand("sp_GetUserList", con))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@LoggedInUserId", loggedInUserId);
-
                 con.Open();
-
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -128,9 +123,9 @@ namespace LMS.DB
                     }
                 }
             }
-
             return users;
         }
+        // The list of Users, searched for 
         public List<UserList> SearchUsers(string searchText, int? roleId, int loggedInUserId)
         {
             List<UserList> users = new List<UserList>();
@@ -162,45 +157,9 @@ namespace LMS.DB
                     }
                 }
             }
-
             return users;
         }
-        public List<SearchUser> SearchEmployees(string Name,string email,int? roleId,int? courseId,string status,DateTime? fromDate,DateTime? toDate)
-        {
-            List<SearchUser> employees = new List<SearchUser>();
-            using (SqlConnection con = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand("sp_SearchEmployees", con))
-            {
-                cmd.Parameters.AddWithValue("@EmployeeName", (object)Name ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Email", (object)email ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@RoleId", (object)roleId ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@CourseId", (object)courseId ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Status", (object)status ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@FromDate", (object)fromDate ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@ToDate", (object)toDate ?? DBNull.Value);
-                con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        employees.Add(new SearchUser
-                        {
-                            UserId = Convert.ToInt32(reader["UserId"]),
-                            Name = reader["Name"].ToString(),
-                            Email = reader["Email"].ToString(),
-                            Role = reader["Role"].ToString(),
-                            Course = reader["Course"] == DBNull.Value ? "" : reader["Course"].ToString(),
-                            EnrollmentDate = reader["EnrollmentDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EnrollmentDate"]),
-                            UserStatus = reader["UserStatus"].ToString(),
-                            CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
-                            CreatedBy = reader["CreatedBy"] == DBNull.Value ? "" : reader["CreatedBy"].ToString()
-                        });
-                    }
-                }
-            }
-
-            return employees;
-        }
+       // To get the User by Id
         public object GetUserById(int id)
         {
             object user = null;
@@ -232,6 +191,7 @@ namespace LMS.DB
             }
             return user;
         }
+        //Updating the User
         public void UpdateUser(int userId, string firstName, string lastName, string email, int roleId, DateTime? startDate, DateTime? endDate, bool courseIsActive)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -250,6 +210,7 @@ namespace LMS.DB
                 cmd.ExecuteNonQuery();
             }
         }
+        // Update the status of activate/deactivate 
         public void UpdateUserStatus(int userId, bool isActive)
         {
             using (SqlConnection con = new SqlConnection(connectionString))

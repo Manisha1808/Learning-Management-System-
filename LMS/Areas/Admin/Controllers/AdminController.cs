@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace LMS.Areas.Admin.Controllers
 {
     public class AdminController : Controller
-    {
+    {   // This filter allows the user(admin) to always land in the Lgin Page first  
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (Session["UserRole"] == null || Session["UserRole"].ToString() != "1")
@@ -63,9 +63,7 @@ namespace LMS.Areas.Admin.Controllers
                     message = "Please correct the validation errors."
                 });
             }
-
             int roleId = Convert.ToInt32(model.Role);
-
             if (roleId == 2 && !model.CourseId.HasValue)   //Choosing course became mandatory, if the role is of Employee
             {
                 return Json(new
@@ -74,12 +72,11 @@ namespace LMS.Areas.Admin.Controllers
                     message = "Please select a course."
                 });
             }
-
+            // Password Hashing
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
             AdminDB db = new AdminDB();
             int loggedInUserId = Convert.ToInt32(Session["UserId"]);
             int userId = db.CreateUser(model, passwordHash, loggedInUserId);
-
             // sp_CreateUser returns -1 when email already exists
             if (userId == -1)
             {
@@ -89,8 +86,7 @@ namespace LMS.Areas.Admin.Controllers
                     message = "Email already exists."
                 });
             }
-
-            if (roleId == 2)
+            if (roleId == 2)   // If the role is of Employee, course is assigned 
             {
                 db.AssignUserCourse(userId, model.CourseId.Value);
             }
@@ -101,24 +97,23 @@ namespace LMS.Areas.Admin.Controllers
                 userId = userId
             });
         }
-
         [HttpGet]
         public JsonResult GetUsers()
         {
             AdminDB db = new AdminDB();
-            int loggedInUserId = Convert.ToInt32(Session["UserId"]);   //Fetching session wise user Id
+            int loggedInUserId = Convert.ToInt32(Session["UserId"]);   //Fetching  session wise user Id
             var users = db.GetUsers(loggedInUserId);
             return Json(users, JsonRequestBehavior.AllowGet);
         }
-
+        //Fetching User By Id so that we can later use it to know what user was assigned with which role and further details
         [HttpGet]
         public JsonResult GetUserById(int id)
         {
             AdminDB db = new AdminDB();
-            var user = db.GetUserById(id);
+            var user = db.GetUserById(id); 
             return Json(user, JsonRequestBehavior.AllowGet);
         }
-
+        // Searching the user based on theirId
         [HttpGet]
         public JsonResult SearchUsers(string searchText, int roleId)
         {
@@ -128,7 +123,7 @@ namespace LMS.Areas.Admin.Controllers
 
             return Json(users, JsonRequestBehavior.AllowGet);
         }
-
+        // The updated data is sent to the db 
         [HttpPost]
         public JsonResult UpdateUser(int UserId, string FirstName, string LastName, string Email, int RoleId, DateTime? StartDate, DateTime? EndDate, bool CourseIsActive)
         {
@@ -141,7 +136,7 @@ namespace LMS.Areas.Admin.Controllers
                 message = "User updated successfully."
             });
         }
-
+        //Whether the user is active or not is sent to the db
         [HttpPost]
         public JsonResult UpdateUserStatus(int UserId, bool IsActive)
         {
@@ -154,7 +149,7 @@ namespace LMS.Areas.Admin.Controllers
                 message = IsActive ? "User activated successfully." : "User deactivated successfully."  //this is for the dialog box 
             });
         }
-
+        // Just to get Admin Profile details 
         [HttpGet]
         public ActionResult ManageProfile()
         {
@@ -164,7 +159,7 @@ namespace LMS.Areas.Admin.Controllers
 
             return View(model);
         }
-
+        //the updated is sent to db
         [HttpPost]
         public JsonResult ManageProfile(ManageProfile model)
         {

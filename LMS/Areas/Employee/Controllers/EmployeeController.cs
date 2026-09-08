@@ -6,7 +6,7 @@ using System.Web.Mvc;
 namespace LMS.Areas.Employee.Controllers
 {
     public class EmployeeController : Controller
-    {
+    {    // This filter allows the user(admin) to always land in the Lgin Page first  
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (Session["UserRole"] == null || Session["UserRole"].ToString() != "2")
