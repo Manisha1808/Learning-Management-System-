@@ -33,7 +33,9 @@ namespace LMS.Areas.Admin.Controllers
         }
         [HttpGet]
         public ActionResult UserList()
-        {
+        {   AdminDB db = new AdminDB();
+            ViewBag.Roles = db.GetRoles();
+            ViewBag.Courses = db.GetCourses();
             return View();
         }
         [HttpGet]
