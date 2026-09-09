@@ -21,21 +21,16 @@ namespace LMS.Areas.Trainer.Controllers
                 );
                 return;
             }
-
             base.OnActionExecuting(filterContext);
         }
-
         private TrainerDB db = new TrainerDB();
-
         public ActionResult Dashboard()
         {
             return View();
         }
-
         public JsonResult GetEmployeeList(EmployeeProgress model)
         {
             DataTable employeeList = db.GetEmployeeList(model);
-
             var rows = employeeList.AsEnumerable()
                 .Select(row => new
                 {
@@ -45,9 +40,8 @@ namespace LMS.Areas.Trainer.Controllers
                     CourseName = row["CourseName"].ToString(),
                     Status = row["Status"].ToString(),
                     EnrollmentDate = row["EnrollmentDate"]
-                })
+                }).https://github.com/Manisha1808/Learning-Management-System-.git
                 .ToList();
-
             return Json(
                 new
                 {
@@ -56,6 +50,5 @@ namespace LMS.Areas.Trainer.Controllers
                 JsonRequestBehavior.AllowGet
             );
         }
-    }
-    
+    }    
 }
