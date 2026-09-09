@@ -22,37 +22,35 @@ namespace LMS.Areas.Trainer.Controllers
             }
             base.OnActionExecuting(filterContext);
         }
-
-        private TrainerDB db = new TrainerDB(); 
+        private TrainerDB db = new TrainerDB();
 
         [HttpGet]
         public ActionResult Dashboard()
         {
             return View();
         }
-        // Fetching the employee list 
         [HttpGet]
         public JsonResult GetEmployeeList(EmployeeProgress model)
-        {
-            DataTable employeeList = db.GetEmployeeList(model);
-
-            var rows = employeeList.AsEnumerable().Select(row => new
-                {
-                    UserId = row["UserId"],
-                    UserName = row["UserName"].ToString(),
-                    Email = row["Email"].ToString(),
-                    CourseName = row["CourseName"].ToString(),
-                    Status = row["Status"].ToString(),
-                    EnrollmentDate = row["EnrollmentDate"]
-                }).ToList();
-
-            return Json(
-                new
-                {
-                    rows = rows
-                },
-                JsonRequestBehavior.AllowGet
-            );
+            {
+                DataTable employeeList = db.GetEmployeeList(model);
+                var rows = employeeList.AsEnumerable()
+                    .Select(row => new
+                    {
+                        UserId = row["UserId"],
+                        UserName = row["UserName"].ToString(),
+                        Email = row["Email"].ToString(),
+                        CourseName = row["CourseName"].ToString(),
+                        Status = row["Status"].ToString(),
+                        EnrollmentDate = row["EnrollmentDate"]
+                    }).ToList();
+                return Json(
+                    new
+                    {
+                        rows = rows
+                    },
+                    JsonRequestBehavior.AllowGet
+                );
+            }
         }
     }
 }
