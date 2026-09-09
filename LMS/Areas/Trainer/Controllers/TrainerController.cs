@@ -1,9 +1,8 @@
-﻿using System;
+﻿using LMS.Areas.Trainer.Models;
+using LMS.DB;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
-using LMS.DB;
-using LMS.Areas.Trainer.Models;
 namespace LMS.Areas.Trainer.Controllers
 {
     public class TrainerController : Controller
@@ -21,23 +20,23 @@ namespace LMS.Areas.Trainer.Controllers
                 );
                 return;
             }
-
             base.OnActionExecuting(filterContext);
         }
 
-        private TrainerDB db = new TrainerDB();
+        private TrainerDB db = new TrainerDB(); 
 
+        [HttpGet]
         public ActionResult Dashboard()
         {
             return View();
         }
-
+        // Fetching the employee list 
+        [HttpGet]
         public JsonResult GetEmployeeList(EmployeeProgress model)
         {
             DataTable employeeList = db.GetEmployeeList(model);
 
-            var rows = employeeList.AsEnumerable()
-                .Select(row => new
+            var rows = employeeList.AsEnumerable().Select(row => new
                 {
                     UserId = row["UserId"],
                     UserName = row["UserName"].ToString(),
@@ -45,8 +44,7 @@ namespace LMS.Areas.Trainer.Controllers
                     CourseName = row["CourseName"].ToString(),
                     Status = row["Status"].ToString(),
                     EnrollmentDate = row["EnrollmentDate"]
-                })
-                .ToList();
+                }).ToList();
 
             return Json(
                 new
@@ -57,5 +55,4 @@ namespace LMS.Areas.Trainer.Controllers
             );
         }
     }
-    
 }
