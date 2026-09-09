@@ -40,8 +40,7 @@ namespace LMS.Areas.Trainer.Controllers
                     CourseName = row["CourseName"].ToString(),
                     Status = row["Status"].ToString(),
                     EnrollmentDate = row["EnrollmentDate"]
-                }).https://github.com/Manisha1808/Learning-Management-System-.git
-                .ToList();
+                }).ToList();
             return Json(
                 new
                 {
