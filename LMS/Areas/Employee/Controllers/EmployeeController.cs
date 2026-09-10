@@ -42,15 +42,24 @@ namespace LMS.Areas.Employee.Controllers
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
             List<EmployeeCourse> courses = db.GetMyLearning(userId);
-            Dictionary<int, CourseProgress> progressList = new Dictionary<int, CourseProgress>(); // Stores all courses assigned to the logged-in employee
-            Dictionary<int, List<VideoProgress>> videoProgressList = new Dictionary<int, List<VideoProgress>>(); // Stores overall progress for each course using CourseId as the key
+            Dictionary<int, CourseProgress> progressList =
+            new Dictionary<int, CourseProgress>();
+            Dictionary<int, List<VideoProgress>> videoProgressList = new Dictionary<int, List<VideoProgress>>();
+            Dictionary<int, Certificate> certificateList =  new Dictionary<int, Certificate>();
+
             foreach (var course in courses)
             {
-                progressList[course.CourseId] = db.GetCourseProgress(userId, course.CourseId);
+                progressList[course.CourseId] =  db.GetCourseProgress(userId, course.CourseId);
+
                 videoProgressList[course.CourseId] = db.GetCourseVideoProgress(userId, course.CourseId);
+
+                certificateList[course.CourseId] = db.GetCertificate(userId, course.CourseId);
             }
-            ViewBag.ProgressList = progressList;     
+
+            ViewBag.ProgressList = progressList;
             ViewBag.VideoProgressList = videoProgressList;
+            ViewBag.CertificateList = certificateList;
+
             return View(courses);
         }
         //the Course action handles course access and deadline validation
@@ -155,49 +164,75 @@ namespace LMS.Areas.Employee.Controllers
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
+
             EmployeeCourse course = db.GetEmployeeCourseAccess(userId, id);
+
             if (course == null)
             {
                 return Content("You do not have access to this course.");
             }
+
             CourseProgress courseProgress = db.GetCourseProgress(userId, id);
-            if (courseProgress == null || courseProgress.TotalVideos == 0 || courseProgress.CompletedVideos != courseProgress.TotalVideos)
+
+            if (courseProgress == null ||
+                courseProgress.TotalVideos == 0 ||
+                courseProgress.CompletedVideos != courseProgress.TotalVideos)
             {
                 return Content("Please complete all course videos before attempting the quiz.");
             }
-            List<QuizQuestion> questions = db.GetQuizQuestions(id);  //stored all the questions 
+
+            List<QuizQuestion> questions = db.GetQuizQuestions(id);
+
+            Certificate certificate = db.GetCertificate(userId, id);
+
+            ViewBag.Certificate = certificate;
+
             return View(questions);
         }
-        
-        //User submits the answers, it checks from the db whether answers are correct or not
         [HttpPost]
         public ActionResult Quiz(int courseId, FormCollection form)
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
+
+            // Check whether certificate is already generated
+            Certificate certificate = db.GetCertificate(userId, courseId);
+
+            if (certificate != null)
+            {
+                return RedirectToAction("Certificate", "Employee",
+                    new { area = "Employee", courseId = courseId });
+            }
+
             Dictionary<int, string> correctAnswers = db.GetQuizAnswers(courseId);
+
             int score = 0;
+
             foreach (var answer in correctAnswers)
             {
                 string selectedAnswer = form["question_" + answer.Key];
-                if (!string.IsNullOrEmpty(selectedAnswer) && selectedAnswer == answer.Value)
+
+                if (!string.IsNullOrEmpty(selectedAnswer) &&
+                    selectedAnswer == answer.Value)
                 {
                     score++;
                 }
             }
             int totalQuestions = correctAnswers.Count;
             int percentage = 0;
+
             if (totalQuestions > 0)
             {
                 percentage = (score * 100) / totalQuestions;
             }
+
             bool isPassed = percentage >= 60;
-            // Save quiz result
-            db.SaveQuizResult(userId, courseId, score, totalQuestions, percentage, isPassed);
+            db.SaveQuizResult(userId,courseId,score,totalQuestions, percentage,isPassed);
             ViewBag.Score = score;
             ViewBag.TotalQuestions = totalQuestions;
             ViewBag.Percentage = percentage;
             ViewBag.CourseId = courseId;
+
             return View("QuizResult");
         }
         // to check whether passed the quiz or not, based on that certificate will be generated 

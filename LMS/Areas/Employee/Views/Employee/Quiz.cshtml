@@ -3,52 +3,93 @@
 @{
     ViewBag.Title = "Quiz";
     Layout = "~/Areas/Employee/Views/Shared/_Layout.cshtml";
+    var certificate = ViewBag.Certificate as LMS.Areas.Employee.Models.Certificate;
 }
 
 <div style="max-width:800px; margin:30px auto;">
+
     <h2>Course Quiz</h2>
     <hr />
 
+    @if (certificate != null)
+    {
+        <div class="alert alert-warning">
+            <strong>Quiz Already Passed</strong>
+            <br />
+            You have already passed this quiz and generated your certificate.
+            You cannot attempt the quiz again.
+        </div>
+    }
+
     @if (Model != null && Model.Count > 0)
-    {   using (Html.BeginForm("Quiz", "Employee", FormMethod.Post))
+    {
+        using (Html.BeginForm("Quiz", "Employee", FormMethod.Post))
         {
             <input type="hidden"
                    name="courseId"
                    value="@Model[0].CourseId" />
+
             int questionNumber = 1;
+
             foreach (var question in Model)
             {
                 <div style="margin-bottom:30px;">
+
                     <h4>
                         @questionNumber. @question.QuestionText
                     </h4>
+
                     <div>
-                        <label> <input type="radio" name="question_@question.QuestionId" value="A" />
+                        <label>
+                            <input type="radio"
+                                   name="question_@question.QuestionId"
+                                   value="A"
+                                   @(certificate != null ? "disabled" : "") />
                             @question.OptionA
                         </label>
                     </div>
+
                     <div>
                         <label>
-                            <input type="radio" name="question_@question.QuestionId"value="B" />
+                            <input type="radio"
+                                   name="question_@question.QuestionId"
+                                   value="B"
+                                   @(certificate != null ? "disabled" : "") />
                             @question.OptionB
                         </label>
                     </div>
+
                     <div>
                         <label>
-                            <input type="radio" name="question_@question.QuestionId" value="C" />
+                            <input type="radio"
+                                   name="question_@question.QuestionId"
+                                   value="C"
+                                   @(certificate != null ? "disabled" : "") />
                             @question.OptionC
                         </label>
                     </div>
+
                     <div>
                         <label>
-                            <input type="radio" name="question_@question.QuestionId" value="D" />
+                            <input type="radio"
+                                   name="question_@question.QuestionId"
+                                   value="D"
+                                   @(certificate != null ? "disabled" : "") />
                             @question.OptionD
                         </label>
                     </div>
+
                 </div>
+
                 questionNumber++;
             }
-            <button type="submit" class="btn btn-primary">  Submit Quiz </button>
+
+            if (certificate == null)
+            {
+                <button type="submit" class="btn btn-primary">
+                    Submit Quiz
+                </button>
+            }
         }
     }
     else

@@ -85,3 +85,4 @@ C:\Users\admin\source\repos\LMS\LMS\obj\Debug\LMS.csproj.CoreCompileInputs.cache
 C:\Users\admin\source\repos\LMS\LMS\obj\Debug\LMS.csproj.CopyComplete
 C:\Users\admin\source\repos\LMS\LMS\obj\Debug\LMS.dll
 C:\Users\admin\source\repos\LMS\LMS\obj\Debug\LMS.pdb
+C:\Users\admin\source\repos\LMS\LMS\obj\Debug\LMS.csproj.AssemblyReference.cache

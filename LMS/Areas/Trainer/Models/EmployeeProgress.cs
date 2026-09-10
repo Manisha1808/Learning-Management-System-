@@ -8,7 +8,6 @@ namespace LMS.Areas.Trainer.Models
         public DateTime? EnrollmentFrom { get; set; }
         public DateTime? EnrollmentTo { get; set; }
 
-
         // Grid fields
         public int UserId { get; set; }
         public string UserName { get; set; }
