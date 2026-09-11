@@ -4,7 +4,7 @@ using System;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.Data;
-
+using LMS.Enums;
 namespace LMS.Areas.Admin.Controllers
 {
     public class AdminController : Controller
@@ -98,7 +98,7 @@ namespace LMS.Areas.Admin.Controllers
                     message = "Email already exists."
                 });
             }
-            if (roleId == 2)   // If the role is of Employee, course is assigned 
+            if(roleId == (int)UserRole.Employee)  // If the role is of Employee, course is assigned 
             {
                 db.AssignUserCourse(userId, model.CourseId.Value);
             }
