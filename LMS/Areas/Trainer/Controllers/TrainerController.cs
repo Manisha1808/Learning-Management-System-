@@ -19,6 +19,7 @@ namespace LMS.Areas.Trainer.Controllers
             base.OnActionExecuting(filterContext);
         }
         private TrainerDB db = new TrainerDB();
+
         [HttpGet]
         public ActionResult Dashboard()
         {

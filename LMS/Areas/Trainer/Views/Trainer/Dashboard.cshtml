@@ -22,9 +22,9 @@
             class="form-control"
             style="width:180px; display:inline-block;">
         <option value="">All Status</option>
-        @foreach (var status in ViewBag.StatusList)
+        @foreach (var status in ViewBag.Statuses)
         {
-            <option value="@status">@status</option>
+            <option value="@status.Value">@status.Text</option>
         }
     </select>
     <input type="date"
