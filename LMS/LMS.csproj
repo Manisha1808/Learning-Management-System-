@@ -161,6 +161,7 @@
     <Compile Include="DB\CommonDB.cs" />
     <Compile Include="DB\EmployeeDB.cs" />
     <Compile Include="DB\TrainerDB.cs" />
+    <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

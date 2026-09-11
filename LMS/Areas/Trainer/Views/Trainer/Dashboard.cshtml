@@ -12,7 +12,6 @@
 <br />
 
 <div>
-
     <input type="text"
            id="txtSearchEmployee"
            placeholder="Search Name or Email"
@@ -22,14 +21,12 @@
     <select id="ddlStatus"
             class="form-control"
             style="width:180px; display:inline-block;">
-
         <option value="">All Status</option>
-        <option value="Not Started">Not Started</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
-
+        @foreach (var status in ViewBag.StatusList)
+        {
+            <option value="@status">@status</option>
+        }
     </select>
-
     <input type="date"
            id="txtEnrollmentFrom"
            class="form-control"
@@ -55,7 +52,6 @@
 </div>
 
 <br />
-
 <table class="table table-bordered table-striped">
 
     <thead>
@@ -70,89 +66,51 @@
     </tbody>
 
 </table>
-
-
 @section scripts
 {
     <script>
-
         $(document).ready(function () {
-
             loadEmployees();
-
-
             // SEARCH
-
             $("#btnSearchEmployee").click(function () {
 
                 loadEmployees();
-
             });
-
-
             // CLEAR
-
             $("#btnClearEmployee").click(function () {
-
                 $("#txtSearchEmployee").val("");
                 $("#ddlStatus").val("");
                 $("#txtEnrollmentFrom").val("");
                 $("#txtEnrollmentTo").val("");
 
                 loadEmployees();
-
             });
-
-
             function loadEmployees() {
-
                 $.ajax({
-
                     url: "/Trainer/Trainer/GetEmployeeList",
-
                     type: "GET",
-
                     data: {
-
                         SearchText: $("#txtSearchEmployee").val(),
-
                         StatusFilter: $("#ddlStatus").val(),
-
                         EnrollmentFrom: $("#txtEnrollmentFrom").val(),
-
                         EnrollmentTo: $("#txtEnrollmentTo").val()
-
                     },
-
                     success: function (response) {
-
                         $("#employeeTableBody").empty();
-
                         $.each(response.rows, function (index, employee) {
-
                             var row = "<tr>" +
                                 "<td>" + employee.UserName + "</td>" +
                                 "<td>" + employee.CourseName + "</td>" +
                                 "<td>" + employee.Status + "</td>" +
                                 "</tr>";
-
                             $("#employeeTableBody").append(row);
-
                         });
-
                     },
-
                     error: function () {
-
                         alert("Unable to load employee data.");
-
                     }
-
                 });
-
             }
-
         });
-
     </script>
 }
