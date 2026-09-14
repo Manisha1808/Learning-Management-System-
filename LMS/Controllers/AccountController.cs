@@ -91,15 +91,35 @@ namespace LMS.Controllers
         [HttpGet]
         public ActionResult ManageProfile()
         {
+            if (Session["UserId"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             int userId = Convert.ToInt32(Session["UserId"]);
 
             CommonDB db = new CommonDB();
 
             ManageProfile model = db.GetManageProfile(userId);
 
+            if (model == null)
+            {
+                return Content("Profile not found for UserId: " + userId);
+            }
+
             return View(model);
         }
+        [HttpGet]
+        public JsonResult GetManageProfile()
+        {
+            int userId = Convert.ToInt32(Session["UserId"]);
 
+            CommonDB db = new CommonDB();
+
+            ManageProfile model = db.GetManageProfile(userId);
+
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
         [HttpPost]
         public JsonResult ManageProfile(ManageProfile model)
         {

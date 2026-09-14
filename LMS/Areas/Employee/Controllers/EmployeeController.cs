@@ -3,13 +3,14 @@ using LMS.DB;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using LMS.Models.Enums;
 namespace LMS.Areas.Employee.Controllers
 {
     public class EmployeeController : Controller
     {    // This filter allows the user(admin) to always land in the Lgin Page first  
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "2")
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != ((int)UserRole.Employee).ToString())
             {
                 filterContext.Result = RedirectToAction("Login", "Account", new { area = "" });
                 return;
@@ -50,16 +51,12 @@ namespace LMS.Areas.Employee.Controllers
             foreach (var course in courses)
             {
                 progressList[course.CourseId] =  db.GetCourseProgress(userId, course.CourseId);
-
                 videoProgressList[course.CourseId] = db.GetCourseVideoProgress(userId, course.CourseId);
-
                 certificateList[course.CourseId] = db.GetCertificate(userId, course.CourseId);
             }
-
             ViewBag.ProgressList = progressList;
             ViewBag.VideoProgressList = videoProgressList;
             ViewBag.CertificateList = certificateList;
-
             return View(courses);
         }
         //the Course action handles course access and deadline validation
@@ -86,6 +83,7 @@ namespace LMS.Areas.Employee.Controllers
             EmployeeCourse course = db.GetEmployeeCourseAccess(userId, id);
             if (course == null)
                 return Content("You do not have access to this course.");
+ 
             List<Video> videos = db.GetCourseVideos(id);
             List<VideoProgress> progress = db.GetCourseVideoProgress(userId, id);
             CourseProgress courseProgress = db.GetCourseProgress(userId, id);
@@ -164,16 +162,13 @@ namespace LMS.Areas.Employee.Controllers
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
-
             EmployeeCourse course = db.GetEmployeeCourseAccess(userId, id);
 
             if (course == null)
             {
                 return Content("You do not have access to this course.");
             }
-
             CourseProgress courseProgress = db.GetCourseProgress(userId, id);
-
             if (courseProgress == null ||
                 courseProgress.TotalVideos == 0 ||
                 courseProgress.CompletedVideos != courseProgress.TotalVideos)
@@ -182,11 +177,8 @@ namespace LMS.Areas.Employee.Controllers
             }
 
             List<QuizQuestion> questions = db.GetQuizQuestions(id);
-
             Certificate certificate = db.GetCertificate(userId, id);
-
             ViewBag.Certificate = certificate;
-
             return View(questions);
         }
         [HttpPost]
@@ -194,38 +186,29 @@ namespace LMS.Areas.Employee.Controllers
         {
             int userId = Convert.ToInt32(Session["UserId"]);
             EmployeeDB db = new EmployeeDB();
-
             // Check whether certificate is already generated
             Certificate certificate = db.GetCertificate(userId, courseId);
-
             if (certificate != null)
             {
                 return RedirectToAction("Certificate", "Employee",
                     new { area = "Employee", courseId = courseId });
             }
-
             Dictionary<int, string> correctAnswers = db.GetQuizAnswers(courseId);
-
             int score = 0;
-
             foreach (var answer in correctAnswers)
             {
                 string selectedAnswer = form["question_" + answer.Key];
-
-                if (!string.IsNullOrEmpty(selectedAnswer) &&
-                    selectedAnswer == answer.Value)
+                if (!string.IsNullOrEmpty(selectedAnswer) && selectedAnswer == answer.Value)
                 {
                     score++;
                 }
             }
             int totalQuestions = correctAnswers.Count;
             int percentage = 0;
-
             if (totalQuestions > 0)
             {
                 percentage = (score * 100) / totalQuestions;
             }
-
             bool isPassed = percentage >= 60;
             db.SaveQuizResult(userId,courseId,score,totalQuestions, percentage,isPassed);
             ViewBag.Score = score;

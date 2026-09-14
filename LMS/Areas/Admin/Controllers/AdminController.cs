@@ -4,14 +4,14 @@ using System;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.Data;
-using LMS.Enums;
+using LMS.Models.Enums;
 namespace LMS.Areas.Admin.Controllers
 {
     public class AdminController : Controller
     {   // This filter allows the user(admin) to always land in the Lgin Page first  
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "1")
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != ((int)UserRole.Admin).ToString())
             {
                 filterContext.Result = RedirectToAction("Login", "Account", new { area = "" });
                 return;
@@ -76,7 +76,7 @@ namespace LMS.Areas.Admin.Controllers
                 });
             }
             int roleId = Convert.ToInt32(model.Role);
-            if (roleId == 2 && !model.CourseId.HasValue)   //Choosing course became mandatory, if the role is of Employee
+            if (roleId == (int)UserRole.Employee && !model.CourseId.HasValue)   //Choosing course became mandatory, if the role is of Employee
             {
                 return Json(new
                 {

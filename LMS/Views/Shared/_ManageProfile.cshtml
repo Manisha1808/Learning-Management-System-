@@ -1,0 +1,96 @@
+﻿<div id="manageProfileModal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog">
+
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button"
+                        class="close"
+                        data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+
+                <h4 class="modal-title">
+                    Manage Profile
+                </h4>
+            </div>
+
+            <div class="modal-body">
+
+                <div>
+                    <label>First Name</label>
+                    <input type="text"
+                           id="profileFirstName"
+                           class="form-control" />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Last Name</label>
+                    <input type="text"
+                           id="profileLastName"
+                           class="form-control" />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Email</label>
+                    <input type="text"
+                           id="profileEmail"
+                           class="form-control" />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Phone Number</label>
+                    <input type="text"
+                           id="profilePhoneNumber"
+                           class="form-control" />
+
+                    <span id="profilePhoneError"
+                          style="color:red;">
+                    </span>
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Created By</label>
+                    <span id="profileCreatedBy"></span>
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Created Date: </label>
+                    <span id="profileCreatedDate"></span>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        id="btnSaveProfile"
+                        class="btn btn-success">
+                    Save
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -52,65 +52,93 @@
 </div>
 
 <br />
-<table class="table table-bordered table-striped">
+<table id="employeeTable"
+       class="table table-bordered table-striped">
 
     <thead>
         <tr>
             <th>User Name</th>
             <th>Course Name</th>
             <th>Status</th>
+            <th>Videos Completed</th>
+            <th>Progress %</th>
         </tr>
     </thead>
 
-    <tbody id="employeeTableBody">
+    <tbody>
     </tbody>
 
 </table>
 @section scripts
 {
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
     <script>
         $(document).ready(function () {
-            loadEmployees();
+
+            var table = $("#employeeTable").DataTable({
+                ajax: {
+                    url: "/Trainer/Trainer/GetEmployeeList",
+                    type: "GET",
+                    data: function (d) {
+                        d.SearchText = $("#txtSearchEmployee").val();
+                        d.StatusFilter = $("#ddlStatus").val();
+                        d.EnrollmentFrom = $("#txtEnrollmentFrom").val();
+                        d.EnrollmentTo = $("#txtEnrollmentTo").val();
+                    },
+                    dataSrc: "rows"
+                },
+
+                columns: [
+                    { data: "UserName" },
+                    { data: "CourseName" },
+                    { data: "Status" },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            return row.CompletedVideos + " / " + row.TotalVideos;
+                        }
+                    },
+                    {
+                        data: "ProgressPercentage",
+                        render: function (data) {
+                            return data + "%";
+                        }
+                    }
+                ],
+
+                pageLength: 10,
+
+                lengthMenu: [5, 10, 25, 50],
+
+                searching: false,
+
+                ordering: true,
+
+                info: true
+            });
+
+
             // SEARCH
             $("#btnSearchEmployee").click(function () {
-
-                loadEmployees();
+                table.ajax.reload();
             });
+
+
             // CLEAR
             $("#btnClearEmployee").click(function () {
+
                 $("#txtSearchEmployee").val("");
                 $("#ddlStatus").val("");
                 $("#txtEnrollmentFrom").val("");
                 $("#txtEnrollmentTo").val("");
 
-                loadEmployees();
+                table.ajax.reload();
             });
-            function loadEmployees() {
-                $.ajax({
-                    url: "/Trainer/Trainer/GetEmployeeList",
-                    type: "GET",
-                    data: {
-                        SearchText: $("#txtSearchEmployee").val(),
-                        StatusFilter: $("#ddlStatus").val(),
-                        EnrollmentFrom: $("#txtEnrollmentFrom").val(),
-                        EnrollmentTo: $("#txtEnrollmentTo").val()
-                    },
-                    success: function (response) {
-                        $("#employeeTableBody").empty();
-                        $.each(response.rows, function (index, employee) {
-                            var row = "<tr>" +
-                                "<td>" + employee.UserName + "</td>" +
-                                "<td>" + employee.CourseName + "</td>" +
-                                "<td>" + employee.Status + "</td>" +
-                                "</tr>";
-                            $("#employeeTableBody").append(row);
-                        });
-                    },
-                    error: function () {
-                        alert("Unable to load employee data.");
-                    }
-                });
-            }
+
         });
     </script>
 }

@@ -3,17 +3,28 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 <style>
+    .dashboard-header {
+        position: relative;
+        padding-top: 20px; }
+
+        .dashboard-header h2 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 40px;
+        }
+
     .manage-profile-btn {
         position: absolute;
         top: 20px;
         right: 30px;
-        padding: 7px 14px;
-        font-size: 13px;
+        padding: 9px 18px;
+        font-size: 14px;
         background-color: #5b9bd5;
         color: white;
         text-decoration: none;
-        border: 1px solid #333;
-        border-radius: 3px;
+        border: none;
+        border-radius: 5px;
     }
 
         .manage-profile-btn:hover {
@@ -21,56 +32,183 @@
             color: white;
             text-decoration: none;
         }
+
     .dashboard-cards {
         display: flex;
-        gap: 25px;
-        margin-top: 50px;
+        gap: 35px;
+        margin-top: 30px;
         justify-content: center;
+        flex-wrap: wrap;
     }
 
     .count-card {
-        width: 220px;
-        padding: 25px;
+        width: 270px;
+        min-height: 180px;
+        padding: 30px 20px;
         text-align: center;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #f8f8f8;
-    }
-
-        .count-card h4 {
-            margin-bottom: 15px;
-            font-size: 18px;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;   }
+        .count-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
-
+        .count-card h4 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 500;
+        }
         .count-card h2 {
-            font-size: 32px;
+            font-size: 42px;
+            font-weight: bold;
             margin: 0;
         }
-     </style>
+        .count-card:nth-child(1) {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .count-card:nth-child(2) {
+            background: linear-gradient(135deg, #36d1dc, #5b86e5);
+        }
+
+        .count-card:nth-child(3) {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #333;
+        }
+    #messageDialog {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        padding: 20px;
+        background-color: white;
+        border: 1px solid #ccc;
+        text-align: center;
+        z-index: 9999;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    #messageText {
+        margin-bottom: 20px;
+    }
+
+    #btnOk {
+        padding: 6px 15px;
+    }
+</style>
 <div class="dashboard-header">
 
     <h2>ADMIN DASHBOARD</h2>
     <div class="dashboard-cards">
 
         <div class="count-card">
-            <h4>Admin</h4>
+            <h4>Admin Count </h4>
             <h2>@ViewBag.AdminCount</h2>
         </div>
 
         <div class="count-card">
-            <h4>Employee</h4>
+            <h4>Employee Count </h4>
             <h2>@ViewBag.EmployeeCount</h2>
         </div>
 
         <div class="count-card">
-            <h4>Trainer</h4>
+            <h4>Trainer Count </h4>
             <h2>@ViewBag.TrainerCount</h2>
         </div>
 
     </div>
-    <a href="@Url.Content("~/Account/ManageProfile")" class="manage-profile-btn">
+    <a href="#"
+       class="manage-profile-btn"
+       data-toggle="modal"
+       data-target="#manageProfileModal">
         Manage Profile
     </a>
 </div>
+<div id="messageDialog" style="display:none;">
+    <p id="messageText"></p>
 
+    <button type="button" id="btnOk">
+        OK
+    </button>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
 
+            function showMessage(message) {
+                $("#messageText").text(message);
+                $("#messageDialog").show();
+            }
+            $("#btnOk").click(function () {
+                $("#messageDialog").hide();
+            });
+            $("#manageProfileModal").on("show.bs.modal", function () {
+                $.ajax({
+                    url: '@Url.Action("GetManageProfile", "Account", new { area = "" })',
+                    type: "GET",
+                    success: function (response) {
+                        $("#profileFirstName").val(response.FirstName);
+                        $("#profileLastName").val(response.LastName);
+                        $("#profileEmail").val(response.Email);
+                        $("#profilePhoneNumber").val(response.PhoneNumber);
+                        $("#profileCreatedBy").text(response.CreatedBy);
+                        var date = new Date(
+                            parseInt(response.CreatedDate.replace("/Date(", "").replace(")/", "")));
+                        $("#profileCreatedDate").text(
+                            date.toLocaleDateString("en-GB") + " " +
+                            date.toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            })
+                        );
+                    },
+                    error: function () {
+                        showMessage("Error while loading profile.");
+                    }
+                });
+
+            });
+            $("#btnSaveProfile").click(function () {
+                var phone = $("#profilePhoneNumber").val().trim();
+                if (phone !== "" && !/^[6-9][0-9]{9}$/.test(phone)) {
+                    $("#profilePhoneError").text(
+                        "Enter a valid 10-digit phone number."
+                    );
+                    return;
+                }
+                $("#profilePhoneError").text("");
+                $.ajax({
+                    url: '@Url.Action("ManageProfile", "Account", new { area = "" })',
+                    type: "POST",
+                    data: {
+                        FirstName: $("#profileFirstName").val(),
+                        LastName: $("#profileLastName").val(),
+                        Email: $("#profileEmail").val(),
+                        PhoneNumber: $("#profilePhoneNumber").val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+
+                            showMessage(response.message);
+
+                            $("#manageProfileModal").modal("hide");
+                        }
+                        else {
+                            showMessage("Profile update failed.");
+                        }
+                    },
+
+                    error: function () {
+                        showMessage("Error while updating profile.");
+                    }
+                });
+
+            });
+
+        });
+    </script>
+}

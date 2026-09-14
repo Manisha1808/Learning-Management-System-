@@ -15,7 +15,6 @@
         border: 1px solid #ccc;
         text-align: center;
     }
-
     #messageText {
         margin-bottom: 20px;
     }
@@ -24,76 +23,73 @@
         padding: 6px 10px;
     }
 </style>
-<h2>Manage Profile</h2>
+    <h2>Manage Profile</h2>
+    <div style="width:400px;">
 
-<div style="width:400px;">
+        <div>
+            <label>First Name</label>
+            <input type="text"
+                   id="txtFirstName"
+                   class="form-control"
+                   value="@Model.FirstName" />
+        </div>
+        <br />
+        <div>
+            <label>Last Name</label>
+            <input type="text"
+                   id="txtLastName"
+                   class="form-control"
+                   value="@Model.LastName" />
+        </div>
+        <br />
+        <div>
+            <label>Email</label>
+            <input type="text"
+                   id="txtEmail"
+                   class="form-control"
+                   value="@Model.Email" />
+        </div>
+        <br />
+        <div>
+            <label>Phone Number </label>
+            <input type="text"
+                   id="txtPhoneNumber"
+                   class="form-control"
+                   value="@Model.PhoneNumber" />
 
-    <div>
-        <label>First Name</label>
-        <input type="text"
-               id="txtFirstName"
-               class="form-control"
-               value="@Model.FirstName" />
+            <span id="phoneError" style="color:red;"></span>
+        </div>
+        <br />
+        <div>
+            <label>
+                Created By: @Model.CreatedBy
+            </label>
+
+        </div>
+
+        <div>
+            <label>
+                Created Date: @Model.CreatedDate
+            </label>
+
+        </div>
+        </br>
+        <button type="button"
+                id="btnSaveProfile"
+                class="btn btn-success">
+            Save
+        </button>
+
     </div>
-    <br />
-    <div>
-        <label>Last Name</label>
-        <input type="text"
-               id="txtLastName"
-               class="form-control"
-               value="@Model.LastName" />
-    </div>
-    <br />
-    <div>
-        <label>Email</label>
-        <input type="text"
-               id="txtEmail"
-               class="form-control"
-               value="@Model.Email" />
-    </div>
-    <br />
-    <div>
-        <label>Phone Number </label>
-        <input type="text"
-               id="txtPhoneNumber"
-               class="form-control"
-               value="@Model.PhoneNumber" />
 
-        <span id="phoneError" style="color:red;"></span>
-    </div>
-    <br />
-    <div>
-        <label>
-            Created By
-            @Model.CreatedBy
-        </label>
-
+    <div id="messageDialog" style="display:none;">
+        <p id="messageText"></p>
+        <button type="button" id="btnOk">OK</button>
     </div>
 
-    <div>
-        <label>
-            Created Date
-            @Model.CreatedDate
-        </label>
-
-    </div>
-    </br>
-    <button type="button"
-            id="btnSaveProfile"
-            class="btn btn-success">
-        Save
-    </button>
-
-</div>
-
-<div id="messageDialog" style="display:none;">
-    <p id="messageText"></p>
-    <button type="button" id="btnOk">OK</button>
-</div>
-
-@section scripts
+    @section scripts
 {
-    <script>
+        <script>
         $(document).ready(function () {
             function showMessage(message) {
                 $("#messageText").text(message);
@@ -129,5 +125,5 @@
 
         });
 
-    </script>
-}
+        </script>
+    }

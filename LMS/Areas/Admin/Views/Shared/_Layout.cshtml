@@ -31,7 +31,7 @@
         .admin-sidebar {
             width: 220px;
             background-color: #5b9bd5;
-            padding: 30px 20px;
+            padding: 55px 20px 30px 20px;
             box-sizing: border-box;
         }
 
@@ -78,7 +78,6 @@
                 text-align: center;
                 margin: 0;
             }
-
         </style>
 
 </head>
@@ -89,12 +88,13 @@
 
         @Html.Partial("_AdminSidebar")
 
+
         <div class="admin-main">
 
             @RenderBody()
 
         </div>
-
+        @Html.Partial("_ManageProfile")
     </div>
     @Scripts.Render("~/bundles/jquery")
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
