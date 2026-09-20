@@ -5,11 +5,11 @@
 
 <center> <h3>User List</h3> </center>
 <br />
-
-@Html.ActionLink("Add User + ", "RegisterUser", "Admin",
-    new { area = "Admin" },
-    new { @class = "btn btn-primary" }
-)
+<a href="@Url.Action("RegisterUser", "Admin", new { area = "Admin" })"
+   class="btn btn-primary"
+   title="Add User">
+    <i class="fas fa-user-plus"></i>
+</a>
 
 <br />
 
@@ -125,7 +125,10 @@
     <p id="confirmText"></p>
 </div>
 
+
+@*Since the user.js file is  huge I have seperately store it and given the reference here*@
+
 @section scripts
 {
-    <script src="~/Scripts/user.js"></script>
+    <script src="~/Scripts/user.js"></script> 
 }

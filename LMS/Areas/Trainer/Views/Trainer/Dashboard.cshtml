@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Trainer Dashboard";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Trainer/Views/Shared/_Layout.cshtml";
 }
 
 <center>
@@ -39,14 +39,16 @@
 
     <button type="button"
             id="btnSearchEmployee"
-            class="btn btn-primary">
-        Search
+            class="btn btn-primary"
+            title="Search">
+        <i class="fas fa-search"></i>
     </button>
 
     <button type="button"
             id="btnClearEmployee"
-            class="btn btn-default">
-        Clear
+            class="btn btn-default"
+            title="Clear">
+        <i class="fas fa-times"></i>
     </button>
 
 </div>

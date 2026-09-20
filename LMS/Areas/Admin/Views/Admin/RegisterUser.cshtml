@@ -2,94 +2,106 @@
 <link href="~/Content/style.css" rel="stylesheet" />
 @{ Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; }
 @*<div class="form-page-container">*@
-<h2> Registration Form </h2>
 
-@using (Html.BeginForm("RegisterUser", "Admin", FormMethod.Post, new { id = "registerForm" }))
-{
-    <div class="form-group">
-        <label class="required-label">First Name</label>
-        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "validation-message" })
-    </div>
+    <h2> Registration Form </h2>
 
-    <div class="form-group">
-        <label class="required-label">Last Name</label>
-        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "validation-message" })
-    </div>
-
-    <div class="form-group">
-        <label class="required-label">Email</label>
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
-        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-message" })
-    </div>
-
-    <div class="form-group">
-        <label class="required-label">Password</label>
-        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validation-message" })
-    </div>
-
-    <div class="form-group">
-        <label class="required-label">Confirm Password</label>
-        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "validation-message" })
-    </div>
-
-    <div class="form-group">
-        <label class="required-label">Role</label>
-        @Html.DropDownListFor(
-            m => m.Role,
-            (IEnumerable<SelectListItem>)ViewBag.Roles,
-            "-- Select Role --",
-            new { @class = "form-control", id = "Role" })
-
-        @Html.ValidationMessageFor(
-            m => m.Role,
-            "",
-            new { @class = "validation-message" })
-    </div>
-
-    <div id="courseDiv" class="form-group" style="display:none;">
-        <label class="required-label">Course</label>
-
-        @Html.DropDownListFor(
-            m => m.CourseId,
-            (IEnumerable<SelectListItem>)ViewBag.Courses,
-            "-- Select Course --",
-            new { @class = "form-control", id = "Course" })
-
-        @Html.ValidationMessageFor(
-            m => m.CourseId,
-            "",
-            new { @class = "validation-message" })
-    </div>
-
-    <div class="button-container">
-
-        <button type="submit" class="btn-create">
-            Create User
-        </button>
-        <button type="button"
-                id="btnClearRegisterUser"
-                class="btn btn-default">
-            Clear
-        </button>
-        <button type="button" class="btn-create"
-                onclick="window.location.href='@Url.Action("Dashboard", "Admin", new { area = "Admin" })'">
-            Back
-        </button>
-    </div>
-
-}
-@*</div>*@
-<div id="messageDialog" title="LMS" style="display:none;">
-    <p id="messageText"></p>
-</div>
-
-@section scripts
+    @using (Html.BeginForm("RegisterUser", "Admin", FormMethod.Post, new { id = "registerForm" }))
     {
-    <script>
+        <div class="form-group">
+            <label class="required-label">First Name</label>
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "validation-message" })
+        </div>
+
+        <div class="form-group">
+            <label class="required-label">Last Name</label>
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "validation-message" })
+        </div>
+
+        <div class="form-group">
+            <label class="required-label">Email</label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-message" })
+        </div>
+
+        <div class="form-group">
+            <label class="required-label">Password</label>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validation-message" })
+        </div>
+
+        <div class="form-group">
+            <label class="required-label">Confirm Password</label>
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "validation-message" })
+        </div>
+
+        <div class="form-group">
+            <label class="required-label">Role</label>
+            @Html.DropDownListFor(
+                m => m.Role,
+                (IEnumerable<SelectListItem>)ViewBag.Roles,
+                "-- Select Role --",
+                new { @class = "form-control", id = "Role" })
+
+            @Html.ValidationMessageFor(
+                m => m.Role,
+                "",
+                new { @class = "validation-message" })
+        </div>
+
+        <div id="courseDiv" class="form-group" style="display:none;">
+            <label class="required-label">Course</label>
+
+            @Html.DropDownListFor(
+                m => m.CourseId,
+                (IEnumerable<SelectListItem>)ViewBag.Courses,
+                "-- Select Course --",
+                new { @class = "form-control", id = "Course" })
+
+            @Html.ValidationMessageFor(
+                m => m.CourseId,
+                "",
+                new { @class = "validation-message" })
+        </div>
+
+        <div class="button-container">
+
+            <button type="submit"
+                    class="btn-create"
+                    title="Create User">
+                <i class="fas fa-user-plus"></i>
+                Create User
+            </button>
+
+            <button type="button"
+                    id="btnClearRegisterUser"
+                    class="btn btn-default"
+                    title="Clear">
+                <i class="fas fa-times"></i>
+                Clear
+            </button>
+
+            <button type="button"
+                    class="btn-create"
+                    title="Back"
+                    onclick="window.location.href='@Url.Action("Dashboard", "Admin", new { area = "Admin" })'">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </button>
+
+        </div>
+
+    }
+   
+    <div id="messageDialog" title="LMS" style="display:none;">
+        <p id="messageText"></p>
+    </div>
+
+    @section scripts
+    {
+        <script>
         $(document).ready(function () {
             $(".required-label").each(function () {
                 $(this).prepend('<span style="color:red;">* </span>');
@@ -111,18 +123,16 @@
             });
 
             // REGISTER USER
-
             function toggleCourse() {
 
-                if ($("#Role").val() == "2") {
-                    $("#courseDiv").show();
-                }
-                else {
-                    $("#courseDiv").hide();
-                    $("#Course").val("");
-                }
+            if ($("#Role").val() == "@((int)LMS.Models.Enums.UserRole.Employee)") {
+                $("#courseDiv").show();
             }
-
+            else {
+                $("#courseDiv").hide();
+                $("#Course").val("");
+            }
+        }
             $("#Role").change(function () {
                 toggleCourse();
             });
@@ -164,9 +174,6 @@
 
         });
 
-    </script>
-}
-@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+        </script>
+    }
 

@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.Mvc;
 using LMS.DB;
-
+using LMS.Models.Enums;
 namespace LMS.Controllers
 {
     public class AccountController : Controller
@@ -51,10 +51,14 @@ namespace LMS.Controllers
                             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, passwordHash);
                             if (isPasswordValid)
                             {
+                                // Store user details in session
                                 Session["UserId"] = userId;
                                 Session["UserRole"] = roleId;
                                 Session["UserEmail"] = model.Email;
-                                if (roleId == 1)
+
+                                // Convert RoleId from database to UserRole enum
+                                UserRole role = (UserRole)roleId;
+                                if (role == UserRole.Admin)
                                 {
                                     return RedirectToAction(
                                         "Dashboard",
@@ -62,7 +66,7 @@ namespace LMS.Controllers
                                         new { area = "Admin" }
                                     );
                                 }
-                                else if (roleId == 2)
+                                else if (role == UserRole.Employee)
                                 {
                                     return RedirectToAction(
                                         "Dashboard",
@@ -70,7 +74,7 @@ namespace LMS.Controllers
                                         new { area = "Employee" }
                                     );
                                 }
-                                else if (roleId==3)
+                                else if (role == UserRole.Trainer)
                                 {
                                     return RedirectToAction(
                                         "Dashboard",

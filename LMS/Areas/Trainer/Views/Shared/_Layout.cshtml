@@ -2,39 +2,219 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewBag.Title - LMS</title>
+
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <style>
+        body {
+            margin: 0;
+            padding-top: 0 !important;
+        }
+
+        .navbar-inverse {
+            background-color: #5b9bd5 !important;
+            border-color: #5b9bd5 !important;
+        }
+
+        .navbar-nav > li > a {
+            color: white !important;
+        }
+
+        #messageDialog {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            text-align: center;
+            z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #messageText {
+            margin-bottom: 20px;
+        }
+
+        #btnOk {
+            padding: 6px 15px;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+
+    <nav class="navbar navbar-inverse">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                </ul>
-            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+
+                <li>
+                    <a href="#"
+                       data-toggle="modal"
+                       data-target="#manageProfileModal">
+                        <i class="fas fa-user"></i>
+                        Manage Profile
+                    </a>
+                </li>
+
+                <li>
+                    <a href="@Url.Action("Logout", "Account", new { area = "" })">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+
         </div>
-    </div>
+    </nav>
 
     <div class="container body-content">
+
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
+
+    </div>
+
+    @Html.Partial("_ManageProfile")
+
+    <div id="messageDialog" style="display:none;">
+        <p id="messageText"></p>
+
+        <button type="button" id="btnOk">
+            OK
+        </button>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+
+    <script>
+        $(document).ready(function () {
+
+            function showMessage(message) {
+
+                $("#messageText").text(message);
+                $("#messageDialog").show();
+
+            }
+
+            $("#btnOk").click(function () {
+
+                $("#messageDialog").hide();
+
+            });
+
+
+            $("#manageProfileModal").on("show.bs.modal", function () {
+
+                $.ajax({
+
+                    url: '@Url.Action("GetManageProfile", "Account", new { area = "" })',
+
+                    type: "GET",
+
+                    success: function (response) {
+
+                        $("#profileFirstName").val(response.FirstName);
+
+                        $("#profileLastName").val(response.LastName);
+
+                        $("#profileEmail").val(response.Email);
+
+                        $("#profilePhoneNumber").val(response.PhoneNumber);
+
+                        $("#profileCreatedBy").text(response.CreatedBy);
+
+
+                        var date = new Date(
+                            parseInt(
+                                response.CreatedDate
+                                    .replace("/Date(", "")
+                                    .replace(")/", "")
+                            )
+                        );
+
+
+                        $("#profileCreatedDate").text(
+
+                            date.toLocaleDateString("en-GB") + " " +
+
+                            date.toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            })
+
+                        );
+
+                    },
+
+                    error: function () {
+
+                        showMessage("Error while loading profile.");
+
+                    }
+
+                });
+
+            });
+
+
+            $("#btnSaveProfile").click(function () {
+
+                var phone = $("#profilePhoneNumber").val().trim();
+
+
+                if (phone !== "" && !/^[6-9][0-9]{9}$/.test(phone)) {
+
+                    $("#profilePhoneError").text(
+                        "Enter a valid 10-digit phone number."
+                    );
+
+                    return;
+
+                }
+                $("#profilePhoneError").text("");
+                $.ajax({
+                    url: '@Url.Action("ManageProfile", "Account", new { area = "" })',
+                    type: "POST",
+                    data: {
+                        FirstName: $("#profileFirstName").val(),
+                        LastName: $("#profileLastName").val(),
+                        Email: $("#profileEmail").val(),
+                        PhoneNumber: $("#profilePhoneNumber").val()
+                    },
+
+
+                    success: function (response) {
+                        if (response.success) {
+                            showMessage(response.message);
+                            $("#manageProfileModal").modal("hide");
+                        }
+                        else {
+                            showMessage("Profile update failed.");
+                        }
+                    },
+                    error: function () {
+                        showMessage("Error while updating profile.");
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
+
     @RenderSection("scripts", required: false)
+
 </body>
 </html>

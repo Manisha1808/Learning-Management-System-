@@ -1,21 +1,33 @@
 ﻿<div class="admin-sidebar">
-    @Html.ActionLink("Home", "Dashboard", "Admin",
-       new { area = "Admin" },
-       new { @class = "sidebar-btn" })
 
-    @Html.ActionLink("Register User", "RegisterUser", "Admin",
-        new { area = "Admin" },
-        new { @class = "sidebar-btn" })
+    <a href="@Url.Action("Dashboard", "Admin", new { area = "Admin" })"
+       class="sidebar-btn">
+        <i class="fas fa-home"></i>
+        Home
+    </a>
 
-    @Html.ActionLink("User List", "UserList", "Admin",
-        new { area = "Admin" },
-        new { @class = "sidebar-btn" })
+    <a href="@Url.Action("RegisterUser", "Admin", new { area = "Admin" })"
+       class="sidebar-btn">
+        <i class="fas fa-user-plus"></i>
+        Register User
+    </a>
 
-    @Html.ActionLink("Search", "SearchUser", "Admin",
-        new { area = "Admin" },
-        new { @class = "sidebar-btn" })
-    @Html.ActionLink("Logout", "Logout", "Account",
-    new { area = "" }, new { @class = "sidebar-btn" })
+    <a href="@Url.Action("UserList", "Admin", new { area = "Admin" })"
+       class="sidebar-btn">
+        <i class="fas fa-users"></i>
+        User List
+    </a>
 
+    <a href="@Url.Action("SearchUser", "Admin", new { area = "Admin" })"
+       class="sidebar-btn">
+        <i class="fas fa-search"></i>
+        Search
+    </a>
+
+    <a href="@Url.Action("Logout", "Account", new { area = "" })"
+       class="sidebar-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+    </a>
 
 </div>

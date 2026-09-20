@@ -94,8 +94,10 @@
                             '<button type="button" ' +
                             'class="btn btn-warning btn-sm btn-status" ' +
                             'data-id="' + rowObject.UserId + '" ' +
-                            'data-status="false">' +
-                            'Deactivate</button>';
+                            'data-status="false" ' +
+                            'title="Deactivate">' +
+                            '<i class="fas fa-user-slash"></i>' +
+                            '</button>';
 
                     }
                     else {
@@ -104,13 +106,18 @@
                             '<button type="button" ' +
                             'class="btn btn-success btn-sm btn-status" ' +
                             'data-id="' + rowObject.UserId + '" ' +
-                            'data-status="true">' +
-                            'Activate</button>';
+                            'data-status="true" ' +
+                            'title="Activate">' +
+                            '<i class="fas fa-user-check"></i>' +
+                            '</button>';
                     }
+
                     return '<button type="button" ' +
                         'class="btn btn-primary btn-sm btn-edit" ' +
-                        'data-id="' + rowObject.UserId + '">' +
-                        'Edit</button> ' +
+                        'data-id="' + rowObject.UserId + '" ' +
+                        'title="Edit User">' +
+                        '<i class="fas fa-edit"></i>' +
+                        '</button> ' +
                         statusButton;
                 }
             }

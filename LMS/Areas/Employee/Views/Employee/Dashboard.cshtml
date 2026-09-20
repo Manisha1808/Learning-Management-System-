@@ -4,60 +4,70 @@
     @foreach (var course in Model)
     {
         bool isAvailable = course.EnrollmentDate <= DateTime.Now;
-        <div class="course-card">
-            <h3>@course.CourseName</h3>
-            <p>
-                Enrollment Date:
-                @course.EnrollmentDate.ToString("dd-MM-yyyy")
-            </p>
-            <p>
-                Status:
-                @if (course.Status == "Expired")
-                {
-                    <span>Expired</span>
-                }
-                else if (isAvailable)
-                {
-                    <span>Active</span>
-                }
-                else
-                {
-                    <span>Locked</span>
-                }
-            </p>
+    <div class="course-card">
+        <h3>@course.CourseName</h3>
+        <p>
+            Enrollment Date:
+            @course.EnrollmentDate.ToString("dd-MM-yyyy")
+        </p>
+        <p>
+            Status:
             @if (course.Status == "Expired")
             {
-                <button class="btn btn-secondary" disabled>
-                    Course Expired
-                </button>
+                <span>Expired</span>
             }
             else if (isAvailable)
             {
-                if (course.StartDate == null)
-                {
-                    <a href="@Url.Action("StartLearning", "Employee",
-            new { area = "Employee", id = course.CourseId })"
-                       class="btn btn-primary">
-                        Start Learning
-                    </a>
-                }
-                else
-                {
-                    <a href="@Url.Action("ContinueLearning", "Employee",
-            new { area = "Employee", id = course.CourseId })"
-                       class="btn btn-primary">
-                        Continue Learning
-                    </a>
-                }
+                <span>Active</span>
             }
             else
             {
-                <button class="btn btn-secondary" disabled>
-                    🔒 Available from
-                    @course.EnrollmentDate.ToString("dd-MM-yyyy")
-                </button>
+                <span>Locked</span>
             }
-        </div>
+        </p>
+        @if (course.Status == "Expired")
+        {
+            <button class="btn btn-secondary" disabled>
+                <i class="fas fa-lock"></i>
+                Course Expired
+            </button>
+        }
+        else if (isAvailable)
+        {
+            if (course.StartDate == null)
+            {
+                <a href="@Url.Action("StartLearning", "Employee",
+                new { area = "Employee", id = course.CourseId })"
+                   class="btn btn-primary">
+
+                    <i class="fas fa-play"></i>
+                    Start Learning
+
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("ContinueLearning", "Employee",
+                new { area = "Employee", id = course.CourseId })"
+                   class="btn btn-primary">
+
+                    <i class="fas fa-play-circle"></i>
+                    Continue Learning
+
+                </a>
+            }
+        }
+        else
+        {
+            <button class="btn btn-secondary" disabled>
+
+                <i class="fas fa-lock"></i>
+                Available from
+                @course.EnrollmentDate.ToString("dd-MM-yyyy")
+
+            </button>
+        }
+    </div>
     }
 </div>
 <style>

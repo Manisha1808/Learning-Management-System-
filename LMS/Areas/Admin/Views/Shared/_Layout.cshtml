@@ -15,11 +15,13 @@
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/free-jqgrid@4.15.5/css/ui.jqgrid.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
 
         body {
             margin: 0;
-            padding-top: 0;
+            padding-top: 0 !important;
             font-family: Arial, sans-serif;
         }
 
@@ -44,7 +46,13 @@
             margin-bottom: 15px;
             border: 1px solid #222;
             width: 150px;
+            box-sizing: border-box;
         }
+
+            .sidebar-btn i {
+                width: 20px;
+                margin-right: 8px;
+            }
 
             .sidebar-btn:hover {
                 background-color: white;
@@ -56,12 +64,15 @@
             flex: 1;
             padding: 5px 30px 30px 30px;
         }
+
         .ui-dialog-titlebar {
             display: none;
         }
+
         .ui-dialog-buttonpane {
             border-top: none !important;
         }
+
         .ui-dialog {
             width: 300px !important;
         }
@@ -69,6 +80,7 @@
         .ui-dialog-content {
             padding: 15px !important;
         }
+
         .dashboard-header {
             position: relative;
             min-height: 50px;
@@ -78,7 +90,7 @@
                 text-align: center;
                 margin: 0;
             }
-        </style>
+    </style>
 
 </head>
 
@@ -99,10 +111,6 @@
     @Scripts.Render("~/bundles/jquery")
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     @Scripts.Render("~/bundles/bootstrap")
-
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/free-jqgrid@4.15.5/css/ui.jqgrid.min.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/free-jqgrid@4.15.5/js/jquery.jqgrid.min.js"></script>
 
